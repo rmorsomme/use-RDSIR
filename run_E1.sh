@@ -6,4 +6,4 @@
 hostname # print hostname
 module load R
 Export R_LIBS_USER = ~/R/x86_64-pc-linux-gnu-library/4.0
-R CMD BATCH test.R
+R CMD BATCH E1.R
