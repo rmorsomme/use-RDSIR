@@ -1,7 +1,7 @@
 library(PDSIR)
 
 set.seed(2)
-x <- experiment_1_proof_of_concept(N = 1e5, save_fig = FALSE)
+x <- experiment_1_proof_of_concept(N = 1e6, save_fig = FALSE)
 save(x, file = "RDATA/E1.RDATA")
 
 print(list(
