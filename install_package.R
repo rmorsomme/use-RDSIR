@@ -1,1 +1,1 @@
-devtools::install_github("rmorsomme/PDSIR", force = TRUE)
+devtools::install_github("rmorsomme/PDSIR")
