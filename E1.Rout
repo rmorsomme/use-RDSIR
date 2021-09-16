@@ -23,7 +23,7 @@ Type 'q()' to quit R.
 > 
 > set.seed(1)
 > plot_id <- "E1"; path = "Figures/E1"
-> x <- experiment_1_proof_of_concept(N = 1e4, save_fig = FALSE)
+> x <- experiment_1_proof_of_concept(N = 1e5, save_fig = FALSE)
 > save(x, file = "RDATA/E1.RDATA")
 > #out <- experiment_1_output_analysis(x, plot_id = plot_id, path = path)
 > 
@@ -34,10 +34,10 @@ Type 'q()' to quit R.
 +   x$SIR$MLE
 + ))
 [[1]]
-[1] 69.022
+[1] 705.582
 
 [[2]]
-[1] 0.23
+[1] 0.23063
 
 [[3]]
  [1]  14  52  74 130 155 130 108  66  56  37
@@ -49,4 +49,4 @@ Type 'q()' to quit R.
 > 
 > proc.time()
    user  system elapsed 
- 69.973   0.233  71.133 
+703.808   0.204 708.666 
