@@ -1,0 +1,52 @@
+
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> library(PDSIR)
+> 
+> set.seed(1)
+> plot_id <- "E1"; path = "Figures/E1"
+> x <- experiment_1_proof_of_concept(N = 1e4, save_fig = FALSE)
+> save(x, file = "RDATA/E1.RDATA")
+> #out <- experiment_1_output_analysis(x, plot_id = plot_id, path = path)
+> 
+> print(list(
++   x$MC$run_time, x$MC$rate_accept, # 4, 0.182
++   x$Y$T_k,
++   #out$summary_no_burn$mean_quant,
++   x$SIR$MLE
++ ))
+[[1]]
+[1] 69.022
+
+[[2]]
+[1] 0.23
+
+[[3]]
+ [1]  14  52  74 130 155 130 108  66  56  37
+
+[[4]]
+       beta       gamma          R0 
+0.002383524 0.997894504 2.388553554 
+
+> 
+> proc.time()
+   user  system elapsed 
+ 69.973   0.233  71.133 
