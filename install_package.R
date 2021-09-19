@@ -1,1 +1,3 @@
-devtools::install_github("rmorsomme/PDSIR")
+
+detach("package:PDSIR", unload=TRUE)
+devtools::install_github("rmorsomme/PDSIR", force = TRUE)
