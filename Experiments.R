@@ -22,7 +22,7 @@ if(run_E1){ # Proof of Concept
 if(run_E3){ # Rho
   set.seed(2)
   output_E3 <- experiment_3_acceptance_vs_rho(
-    S0s = c(250, 500, 1000), R0s = c(2, 2.5, 3), N = 1e4
+    S0s = c(250, 500, 1000), R0s = c(2, 2.5, 3), N = 1e5
     )
   save(output_E3, file = "Output/RDATA/E3.RDATA")
   }
