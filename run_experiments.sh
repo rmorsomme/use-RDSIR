@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --output=experiment.out
 #SBATCH --error=experiment.err
-#SBATCH --mem=1G # GB RAM
+#SBATCH --mem=5G # GB RAM
 #SBATCH --partition=scavenger#
 hostname # print hostname
 module load R
