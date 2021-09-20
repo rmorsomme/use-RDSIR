@@ -1,0 +1,71 @@
+
+R version 4.1.1 (2021-08-10) -- "Kick Things"
+Copyright (C) 2021 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> 
+> #
+> # Setup
+> library(PDSIR)
+> run_E1 <- FALSE
+> run_E3 <- TRUE
+> 
+> #
+> # Experiments
+> if(run_E1){ # Proof of Concept
++   set.seed(2)
++   output_E1 <- experiment_1_proof_of_concept(N = 1e6, save_fig = FALSE)
++   save(output_E1, file = "Output/RDATA/E1.RDATA")
++ 
++   print(list(
++     output_E1$MC$run_time, output_E1$MC$rate_accept, # 4, 0.182
++     output_E1$Y$T_k,
++     output_E1$SIR$MLE
++   ))
++ }
+> 
+> if(run_E3){ # Rho
++   set.seed(2)
++   output_E3 <- experiment_3_acceptance_vs_rho(
++     S0s = c(250, 500, 1000), R0s = c(2, 2.5, 3), N = 1e4
++     )
++   save(output_E3, file = "Output/RDATA/E3.RDATA")
++   }
+[1] "250 - 0.02: 2021-09-20 12:46:51"
+[1] "250 - 0.05: 2021-09-20 12:47:21"
+[1] "250 - 0.1: 2021-09-20 12:47:56"
+[1] "250 - 0.25: 2021-09-20 12:48:39"
+[1] "250 - 0.5: 2021-09-20 12:49:27"
+[1] "250 - 1: 2021-09-20 12:50:20"
+[1] "500 - 0.02: 2021-09-20 12:50:54"
+[1] "500 - 0.05: 2021-09-20 12:51:35"
+[1] "500 - 0.1: 2021-09-20 12:52:20"
+[1] "500 - 0.25: 2021-09-20 12:53:12"
+[1] "500 - 0.5: 2021-09-20 12:54:11"
+[1] "500 - 1: 2021-09-20 12:55:20"
+[1] "1000 - 0.02: 2021-09-20 12:56:11"
+[1] "1000 - 0.05: 2021-09-20 12:57:06"
+[1] "1000 - 0.1: 2021-09-20 12:58:08"
+[1] "1000 - 0.25: 2021-09-20 12:59:19"
+[1] "1000 - 0.5: 2021-09-20 13:01:03"
+[1] "1000 - 1: 2021-09-20 13:03:43"
+> 
+> proc.time()
+    user   system  elapsed 
+1037.749    0.884 1051.003 
