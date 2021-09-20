@@ -1,4 +1,6 @@
 
+library(PDSIR)
+
 load("Output/RDATA/E1.RDATA")
 
 summary_E1 <- experiment_1_output_analysis(output_E1, plot_id = "E1", path = "Output/Figures/E1", n_max = 1e3, thin = 10)
