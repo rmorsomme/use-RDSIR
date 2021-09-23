@@ -9,7 +9,7 @@ run_E3 <- TRUE
 # Experiments
 if(run_E1){ # Proof of Concept
   set.seed(2)
-  output_E1 <- experiment_1_proof_of_concept(N = 1e6, save_fig = FALSE)
+  output_E1 <- experiment_1_proof_of_concept(N = 500e3, save_fig = FALSE)
   save(output_E1, file = "Output/RDATA/E1.RDATA")
 
   print(list(
