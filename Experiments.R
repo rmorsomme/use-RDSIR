@@ -15,14 +15,17 @@ if(run_E1){ # Proof of Concept
   print(list(
     output_E1$MC$run_time, output_E1$MC$rate_accept, # 4, 0.182
     output_E1$Y$T_k,
-    output_E1$SIR$MLE
+    output_E1$SIR$MLE,
+    paste0("E1 is done - ", Sys.time())
   ))
 }
 
 if(run_E3){ # Rho
   set.seed(2)
   output_E3 <- experiment_3_acceptance_vs_rho(
-    S0s = c(1000, 500, 250, 100), R0s = c(3, 2.5, 2, 1.75), N = 500e3
+    S0s = c(1000, 500, 250, 100), R0s = c(3, 2.5, 2, 1.75), N = 250e3
     )
   save(output_E3, file = "Output/RDATA/E3.RDATA")
-  }
+  print(paste0("E3 is done - ", Sys.time()))
+}
+
