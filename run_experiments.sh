@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --output=experiment.out
-#SBATCH --error=experiment.err
+#SBATCH --output=DCC/experiment.out
+#SBATCH --error=DCC/experiment.err
 #SBATCH --mem=1G # GB RAM
 #SBATCH --partition=scavenger#
 hostname # print hostname
