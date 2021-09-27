@@ -5,6 +5,7 @@ library(PDSIR)
 run_E1 <- FALSE
 run_E3 <- FALSE
 run_E4 <- TRUE
+run_E5 <- FALSE
 
 #
 # Experiments
@@ -35,8 +36,17 @@ if(run_E3){ # Rho
 if(run_E4){ # coverage
   set.seed(2)
   output_E4 <- experiment_4_coverage(
-    N = 1e5, S0s = 5e2, R0s = 2.5, m = 500
+    N = 5e3, S0s = 1e2, R0s = 2, m = 500
   )
   save(output_E4, file = "Output/RDATA/E4.RDATA")
   print(paste0("E4 is done - ", Sys.time()))
 }
+
+
+if(run_E5){ # Ebola
+  set.seed(2)
+  output_E5 <- experiment_5_ebola(N = 1e6, rho = 0.1)
+  save(output_E5, file = "Output/RDATA/E5.RDATA")
+  print(paste0("E5 is done - ", Sys.time()))
+}
+
