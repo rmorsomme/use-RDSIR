@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --output=experiment_a.out
 #SBATCH --error=experiment_a.err
-#SBATCH --mem=500
+#SBATCH --mem=1G
 #SBATCH --partition=scavenger#
 #SBATCH --array=1-100
 hostname # print hostname
