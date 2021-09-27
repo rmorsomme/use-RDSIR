@@ -16,6 +16,6 @@ print(list(
 ))
 
 
-load("Output/RDATA/E3bis.RDATA")
+load("Output/RDATA/E3.RDATA")
 experiment_3_output_analysis(output_E3, path = "Output/Figures/E3")
 

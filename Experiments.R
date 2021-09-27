@@ -3,7 +3,8 @@
 # Setup
 library(PDSIR)
 run_E1 <- FALSE
-run_E3 <- TRUE
+run_E3 <- FALSE
+run_E4 <- TRUE
 
 #
 # Experiments
@@ -29,3 +30,13 @@ if(run_E3){ # Rho
   print(paste0("E3 is done - ", Sys.time()))
 }
 
+
+
+if(run_E4){ # coverage
+  set.seed(2)
+  output_E4 <- experiment_4_coverage(
+    N = 1e5, S0s = 5e2, R0s = 2.5, m = 500
+  )
+  save(output_E4, file = "Output/RDATA/E4.RDATA")
+  print(paste0("E4 is done - ", Sys.time()))
+}
