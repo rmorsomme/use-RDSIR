@@ -36,7 +36,7 @@ if(run_E3){ # Rho
 if(run_E4){ # coverage
   set.seed(2)
   output_E4 <- experiment_4_coverage(
-    N = 5e3, S0s = 1e2, R0s = 2, m = 500
+    N = 5e3, S0s = 1e2, R0s = 2, m = 200
   )
   save(output_E4, file = "Output/RDATA/E4.RDATA")
   print(paste0("E4 is done - ", Sys.time()))
