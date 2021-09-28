@@ -31,4 +31,4 @@ Type 'q()' to quit R.
 +   save(output_E4, file = paste0("Output/RDATA/E4_", i, ".RDATA"))
 +   print(paste0("E4 is done - ", Sys.time()))
 + }
-[1] "1000 - 1/1: 2021-09-27 17:03:08"
+[1] "1000 - 1/1: 2021-09-28 02:42:31"
