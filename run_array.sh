@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --output=DCC/experiment_a.out
 #SBATCH --error=DCC/experiment_a.err
-#SBATCH --mem=2G
+#SBATCH --mem=4G
 #SBATCH --partition=scavenger#
 #SBATCH --array=1-2
 hostname # print hostname
