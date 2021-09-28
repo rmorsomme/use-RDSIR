@@ -1,0 +1,34 @@
+
+R version 4.1.1 (2021-08-10) -- "Kick Things"
+Copyright (C) 2021 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> library(PDSIR)
+> run_E4 <- TRUE
+> 
+> if(run_E4){ # coverage
++   i <- as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID"))
++   set.seed(i)
++   output_E4 <- experiment_4_coverage(
++     N = 1e6, S0s = 1e3, R0s = 2.5, m = 1
++   )
++   save(output_E4, file = paste0("Output/RDATA/E4_", i, ".RDATA"))
++   print(paste0("E4 is done - ", Sys.time()))
++ }
+[1] "1000 - 1/1: 2021-09-27 17:03:08"
