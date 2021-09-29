@@ -31,4 +31,9 @@ Type 'q()' to quit R.
 +   save(output_E4, file = paste0("Output/RDATA/E4_", i, ".RDATA"))
 +   print(paste0("E4 is done - ", Sys.time()))
 + }
-[1] "1000 - 1/1: 2021-09-28 02:42:31"
+[1] "1000 - 1/1: 2021-09-28 18:25:00"
+[1] "E4 is done - 2021-09-28 21:28:53"
+> 
+> proc.time()
+     user    system   elapsed 
+10938.867     2.553 11042.253 
