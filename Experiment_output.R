@@ -19,8 +19,15 @@ print(list(
 load("Output/RDATA/E3.RDATA")
 experiment_3_output_analysis(output_E3, path = "Output/Figures/E3")
 
-load("Output/RDATA/E4.RDATA")
-summary_4 <- experiment_4_output_analysis(output_E4, path = "Output/Figures/E4")
+
+
+load("Output/RDATA/E4_1.RDATA")
+results <- output_E4
+for(i in 2 : 200) {
+  load(paste0("Output/RDATA/E4_", i, ".RDATA"))
+  results <- rbind(results, output_E4)
+}
+summary_4 <- experiment_4_output_analysis(results, path = "Output/Figures/E4")
 
 load("Output/RDATA/E5.RDATA")
 summary_5 <- experiment_5_output(output_E5, path = "Output/Figures/E5")
