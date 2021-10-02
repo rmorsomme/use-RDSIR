@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -o DCC/experiment_N_%a.out
 #SBATCH -e DCC/experiment_N_%a.err
-#SBATCH --mem=5G
+#SBATCH --mem=2G
 #SBATCH -p scavenger
 #SBATCH -a 2-5
 hostname # print hostname
