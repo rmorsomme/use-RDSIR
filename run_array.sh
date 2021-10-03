@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -o slurm/experiment_I0_%a.out
 #SBATCH -e slurm/experiment_I0_%a.err
-#SBATCH --mem=1G
+#SBATCH --mem=3G
 #SBATCH -p scavenger
 #SBATCH -a 1-3
 hostname # print hostname
