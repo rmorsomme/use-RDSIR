@@ -43,11 +43,11 @@ if(run_E5){ # Ebola
 if(run_E6){ # Ebola
 
   set.seed(1)
-  output_E6_single <- experiment_6_single_site_update(N = 1e6, save_fig = FALSE)
+  output_E6_single <- experiment_6_single_site_update(N = 1e6, save_fig = FALSE, thin = 10)
   save(output_E6_single, file = "Output/RDATA/E6_single.RDATA")
 
   set.seed(1)
-  output_E6_joint  <- experiment_1_proof_of_concept(N = 1e6, save_fig = FALSE)
+  output_E6_joint  <- experiment_1_proof_of_concept(N = 1e6, save_fig = FALSE, thin = 10)
   save(output_E6_single, file = "Output/RDATA/E6_joint.RDATA" )
 
   print(paste0("E6 is done - ", Sys.time()))
