@@ -27,7 +27,7 @@ for(i in 3 : 200) {
   load(paste0("Output/RDATA/E4_", i, ".RDATA"))
   results <- rbind(results, output_E4)
 }
-summary_4 <- experiment_4_output_analysis(results, path = "Output/Figures/E4")
+summary_E4 <- experiment_4_output_analysis(results, path = "Output/Figures/E4")
 
 load("Output/RDATA/E5.RDATA")
 summary_5 <- experiment_5_output(output_E5, path = "Output/Figures/E5")

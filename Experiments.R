@@ -4,8 +4,8 @@
 library(PDSIR)
 run_E1 <- FALSE
 run_E3 <- FALSE
-run_E4 <- TRUE
-run_E5 <- TRUE
+run_E5 <- FALSE
+run_E6 <- TRUE
 
 #
 # Experiments
@@ -32,21 +32,25 @@ if(run_E3){ # Rho
 }
 
 
-
-if(run_E4){ # coverage
-  set.seed(2)
-  output_E4 <- experiment_4_coverage(
-    N = 50e3, S0s = 1e3, R0s = 2, m = 200
-  )
-  save(output_E4, file = "Output/RDATA/E4.RDATA")
-  print(paste0("E4 is done - ", Sys.time()))
+if(run_E5){ # Ebola
+  set.seed(1)
+  output_E5 <- experiment_5_ebola(N = 1e6, rho = 0.1, thin = 10)
+  save(output_E5, file = "Output/RDATA/E5.RDATA")
+  print(paste0("E5 is done - ", Sys.time()))
 }
 
 
-if(run_E5){ # Ebola
-  set.seed(2)
-  output_E5 <- experiment_5_ebola(N = 1e6, rho = 0.1)
-  save(output_E5, file = "Output/RDATA/E5.RDATA")
-  print(paste0("E5 is done - ", Sys.time()))
+if(run_E6){ # Ebola
+
+  set.seed(1)
+  output_E6_single <- experiment_6_single_site_update(N = 1e6, save_fig = FALSE)
+  save(output_E6_single, file = "Output/RDATA/E6_single.RDATA")
+
+  set.seed(1)
+  output_E6_joint  <- experiment_1_proof_of_concept(N = 1e6, save_fig = FALSE)
+  save(output_E6_single, file = "Output/RDATA/E6_joint.RDATA" )
+
+  print(paste0("E6 is done - ", Sys.time()))
+
 }
 
