@@ -47,8 +47,8 @@ if(run_E6){ # Ebola
   save(output_E6_single, file = "Output/RDATA/E6_single.RDATA")
 
   set.seed(1)
-  output_E6_joint  <- experiment_1_proof_of_concept(N = 1e6, save_fig = FALSE, thin = 10)
-  save(output_E6_single, file = "Output/RDATA/E6_joint.RDATA" )
+  output_E6_joint  <- experiment_1_proof_of_concept(N = 1e6, save_fig = FALSE, thin = 10, rho = 1/10)
+  save(output_E6_joint, file = "Output/RDATA/E6_joint.RDATA" )
 
   print(paste0("E6 is done - ", Sys.time()))
 
