@@ -13,6 +13,7 @@
 **/*.jpg
 # Except in Manuscripts directory
 !Manuscripts/**/*.jpeg
+!Manuscripts/**/*.jpg
 
 
 # Example code in package build process
