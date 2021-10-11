@@ -40,7 +40,7 @@ if(run_E3){ # Rho
 
 if(run_E5){ # Ebola
   set.seed(1)
-  output_E5 <- experiment_5_ebola(N = 1e3, rho = 0.1, thin = 10)
+  output_E5 <- experiment_5_ebola(N = 1e6, rho = 0.1, thin = 10)
   save(output_E5, file = "Output/RDATA/E5.RDATA")
   print(paste0("E5 is done - ", Sys.time()))
 }
