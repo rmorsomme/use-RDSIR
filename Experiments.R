@@ -46,7 +46,7 @@ if(run_E5){ # Ebola
 }
 
 
-if(run_E6){ # Ebola
+if(run_E6){ # single-site updates
 
   set.seed(1)
   output_E6_single <- experiment_6_single_site_update(N = 1e6, save_fig = FALSE, thin = 10)
