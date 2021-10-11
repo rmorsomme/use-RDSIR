@@ -31,3 +31,12 @@ summary_E4 <- experiment_4_output_analysis(results, path = "Output/Figures/E4")
 
 load("Output/RDATA/E5.RDATA")
 summary_5 <- experiment_5_output(output_E5, path = "Output/Figures/E5", burnin = 50)
+
+load("Output/RDATA/E6_joint.RDATA")
+load("Output/RDATA/E6_single.RDATA")
+summary_E6_joint <- experiment_1_output_analysis(
+  output_E6_joint, plot_id = "E6", path = "Output/Figures/E6/joint"
+)
+summary_E6_single <- experiment_1_output_analysis(
+  output_E6_single, plot_id = "E6", path = "Output/Figures/E6/single"
+)
