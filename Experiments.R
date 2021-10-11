@@ -3,9 +3,10 @@
 # Setup
 library(PDSIR)
 run_E1 <- FALSE
+run_E2 <- FALSE
 run_E3 <- FALSE
-run_E5 <- FALSE
-run_E6 <- TRUE
+run_E5 <- TRUE
+run_E6 <- FALSE
 
 #
 # Experiments
@@ -22,6 +23,11 @@ if(run_E1){ # Proof of Concept
   ))
 }
 
+if(run_E2){
+  set.seed(1)
+  experiment_2_PDSIR_trajectories(path = "Output/Figures/E2")
+}
+
 if(run_E3){ # Rho
   set.seed(2)
   output_E3 <- experiment_3_acceptance_vs_rho(
@@ -34,7 +40,7 @@ if(run_E3){ # Rho
 
 if(run_E5){ # Ebola
   set.seed(1)
-  output_E5 <- experiment_5_ebola(N = 1e6, rho = 0.1, thin = 10)
+  output_E5 <- experiment_5_ebola(N = 1e3, rho = 0.1, thin = 10)
   save(output_E5, file = "Output/RDATA/E5.RDATA")
   print(paste0("E5 is done - ", Sys.time()))
 }
