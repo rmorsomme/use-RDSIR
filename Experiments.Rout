@@ -65,5 +65,24 @@ Type 'q()' to quit R.
 +   save(output_E5, file = "Output/RDATA/E5.RDATA")
 +   print(paste0("E5 is done - ", Sys.time()))
 + }
-Error: '../test/Data/Ebola/Guinea_modified.csv' does not exist in current working directory ('/hpc/home/rnm16/Projects/use-RDSIR').
-Execution halted
+[1] "E5 is done - 2021-10-12 03:06:16"
+> 
+> 
+> if(run_E6){ # single-site updates
++ 
++   set.seed(1)
++   output_E6_single <- experiment_6_single_site_update(N = 1e6, save_fig = FALSE, thin = 10)
++   save(output_E6_single, file = "Output/RDATA/E6_single.RDATA")
++ 
++   set.seed(1)
++   output_E6_joint  <- experiment_1_proof_of_concept(N = 1e6, save_fig = FALSE, thin = 10, rho = 1/10)
++   save(output_E6_joint, file = "Output/RDATA/E6_joint.RDATA" )
++ 
++   print(paste0("E6 is done - ", Sys.time()))
++ 
++ }
+> 
+> 
+> proc.time()
+     user    system   elapsed 
+28445.255    10.307 28840.876 
