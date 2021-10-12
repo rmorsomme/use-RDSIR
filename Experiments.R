@@ -2,17 +2,17 @@
 #
 # Setup
 library(PDSIR)
-run_E1 <- FALSE
+run_E1 <- T
 run_E2 <- FALSE
 run_E3 <- FALSE
-run_E5 <- TRUE
+run_E5 <- F
 run_E6 <- FALSE
 
 #
 # Experiments
 if(run_E1){ # Proof of Concept
   set.seed(2)
-  output_E1 <- experiment_1_proof_of_concept(N = 1e6, save_fig = FALSE)
+  output_E1 <- experiment_1_proof_of_concept(N = 1e6, save_fig = FALSE, thin = 10)
   save(output_E1, file = "Output/RDATA/E1.RDATA")
 
   print(list(
