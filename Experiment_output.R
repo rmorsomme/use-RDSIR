@@ -30,7 +30,7 @@ for(i in 3 : 200) {
 summary_E4 <- experiment_4_output_analysis(results, path = "Output/Figures/E4")
 
 load("Output/RDATA/E5.RDATA")
-summary_5 <- experiment_5_output(output_E5, path = "Output/Figures/E5", burnin = 50)
+summary_5 <- experiment_5_output(output_E5, path = "Output/Figures/E5", burnin = 1e4)
 
 load("Output/RDATA/E6_joint.RDATA")
 load("Output/RDATA/E6_single.RDATA")
