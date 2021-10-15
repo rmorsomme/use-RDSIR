@@ -61,6 +61,6 @@ if(run_E6){ # single-site updates
 }
 
 
-x <- cummax(stats::rnorm(1e8))
+x <- cummax(stats::rnorm(1e7))
 y <- x[seq(1, length(x), by = 1e3)]
 save(x, y, file = "test.RDATA")
