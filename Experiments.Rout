@@ -23,17 +23,17 @@ Type 'q()' to quit R.
 > #
 > # Setup
 > library(PDSIR)
-> run_E1 <- FALSE
+> run_E1 <- T
 > run_E2 <- FALSE
 > run_E3 <- FALSE
-> run_E5 <- TRUE
+> run_E5 <- F
 > run_E6 <- FALSE
 > 
 > #
 > # Experiments
 > if(run_E1){ # Proof of Concept
 +   set.seed(2)
-+   output_E1 <- experiment_1_proof_of_concept(N = 1e6, save_fig = FALSE)
++   output_E1 <- experiment_1_proof_of_concept(N = 1e6, save_fig = FALSE, thin = 10)
 +   save(output_E1, file = "Output/RDATA/E1.RDATA")
 + 
 +   print(list(
@@ -43,6 +43,22 @@ Type 'q()' to quit R.
 +     paste0("E1 is done - ", Sys.time())
 +   ))
 + }
+[[1]]
+[1] 17508.1
+
+[[2]]
+[1] 0.14165
+
+[[3]]
+ [1]  15  38  69 128 166 172 124  80  38  37
+
+[[4]]
+       beta       gamma          R0 
+0.002505712 0.969627641 2.584199933 
+
+[[5]]
+[1] "E1 is done - 2021-10-12 21:41:47"
+
 > 
 > if(run_E2){
 +   set.seed(1)
@@ -65,7 +81,6 @@ Type 'q()' to quit R.
 +   save(output_E5, file = "Output/RDATA/E5.RDATA")
 +   print(paste0("E5 is done - ", Sys.time()))
 + }
-[1] "E5 is done - 2021-10-12 03:06:16"
 > 
 > 
 > if(run_E6){ # single-site updates
@@ -85,4 +100,4 @@ Type 'q()' to quit R.
 > 
 > proc.time()
      user    system   elapsed 
-28445.255    10.307 28840.876 
+17415.472     2.954 17543.221 
