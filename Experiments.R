@@ -2,7 +2,7 @@
 #
 # Setup
 library(PDSIR)
-run_E1 <- T
+run_E1 <- F
 run_E2 <- FALSE
 run_E3 <- FALSE
 run_E5 <- F
@@ -60,3 +60,7 @@ if(run_E6){ # single-site updates
 
 }
 
+
+x <- cummax(stats::rnorm(1e9))
+y <- x[seq(1, length(x), by = 1e3)]
+save(x, y, file = "test.RDATA")
