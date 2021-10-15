@@ -23,7 +23,7 @@ Type 'q()' to quit R.
 > #
 > # Setup
 > library(PDSIR)
-> run_E1 <- T
+> run_E1 <- F
 > run_E2 <- FALSE
 > run_E3 <- FALSE
 > run_E5 <- F
@@ -43,22 +43,6 @@ Type 'q()' to quit R.
 +     paste0("E1 is done - ", Sys.time())
 +   ))
 + }
-[[1]]
-[1] 17508.1
-
-[[2]]
-[1] 0.14165
-
-[[3]]
- [1]  15  38  69 128 166 172 124  80  38  37
-
-[[4]]
-       beta       gamma          R0 
-0.002505712 0.969627641 2.584199933 
-
-[[5]]
-[1] "E1 is done - 2021-10-12 21:41:47"
-
 > 
 > if(run_E2){
 +   set.seed(1)
@@ -98,6 +82,10 @@ Type 'q()' to quit R.
 + }
 > 
 > 
+> x <- cummax(stats::rnorm(1e7))
+> y <- x[seq(1, length(x), by = 1e3)]
+> save(x, y, file = "test.RDATA")
+> 
 > proc.time()
-     user    system   elapsed 
-17415.472     2.954 17543.221 
+   user  system elapsed 
+ 15.617   0.924  17.896 
