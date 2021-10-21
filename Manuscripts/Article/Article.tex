@@ -22,6 +22,7 @@
 
 \newcommand{\jx}[1]{{\color{blue}{ #1}}}
 \newcommand{\ram}[1]{{\color{green}{ #1}}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{proposition}{Proposition}[section]
@@ -391,7 +392,8 @@
 	
 	The following characteristics of our DA-MCMC algorithm are worth noting.
 	First, initializing the Markov chain only requires setting $\theta^{(0)} = (\beta^{(0)}, \gamma^{(0)})$ since $\Z^{(0)}$ can be generated from the PD-SIR process conditionally on $\theta^{(0)}$ and $\Y$ alone.
-	Second, since the PD-SIR closely approximates the SIR model, the acceptance rate in the Metropolis-Hastings step for the latent data is relatively high. For large population, however, the acceptance rate may be too low, thereby hindering the mixing of the Markov chain. To address this issue, we propose to update the event times of only a fraction $0<\rho\le 1$ of the individuals in the population. Smaller values for $\rho$ result in smaller jumps in the latent space and a larger acceptance rate.
+	Second, since the PD-SIR closely approximates the SIR model, the acceptance rate in the Metropolis-Hastings step for the latent data is relatively high. For large population, however, the acceptance rate may be too low, thereby hindering the mixing of the Markov chain. To address this issue, we propose to update the event times of only a fraction $0<\rho\le 1$ of the individuals in the population; that is, in the Metropolis-Hastings step we only update the infection and removal times of $\lfloor\rho (S(0)+I(0))\rfloor$ individuals chosen randomly.
+	Smaller values for $\rho$ result in smaller jumps in the latent space and a larger acceptance rate, which may lead to better mixing in certain cases.
 	Third, if all event times are updated ($\rho = 1$), then the proposed and current latent data are independent conditionally on the current values of the parameters: $\Z^{(k-1)} \perp \Z^* | \theta^{(k)}$. This contrasts with existing DA-MCMC algorithms which only update a small fraction of the latent data per iteration.
 	%Fourth, since the latent data are generated from a process that only resembles the SIR model, we ensure that the Markov chain converges to the correct distribution $\pi(\theta, \Z|\Y)$ by proposing and accepting the latent data according to a Metropolis-Hastings scheme. This results in exact Bayesian inference targeting the posterior distribution under the original SIR model.
 	%Fifth, 
@@ -599,29 +601,17 @@
 	
 	\subsection{Simulation Study}
 	\label{sec:sim}
-	%Outline: setup; results: posterior mean, credible interval, frequentist coverage, run time, ACF, acceptance rate; table; figure: traceplot, ACF; tuning: update proportion v. acceptance rate; compare with others methods e.g. chain binomial, exact proposal.
+	%Outline: (1) proof of concept, (1bis) coverage, (2) rho (3) single-site versus joint proposal
 	
-	% 1. convergence in medium-size population
-	% 2. rho
-	% 3. nominal coverage should be 95%: boxplot of posterior means, including coverage (one setting is enough for the moment)
-	% 4. distribution of estimate for PD-SIR (unbiased) vs. LNA (biased)
 	% explain why not compare chain binomial, particle filtering (forward simulation), LNA requires noisy data.
 	
 	
-	% TODO: Tables: posterior means, credible intervals, effective sample size.
-	% TODO: frequentist coverage for 3 different observation schedules
+	We examine the convergence properties of the proposed DA-MCMC algorithm with simulation studies. First, we assess the performance of the DA-MCMC algorithm in a medium-sized population of over $1000$ individuals. We simulate a pandemic with parameters $(\beta, \gamma) = (0.0025, 1)$, which gives $R_0 = 2.5$, starting with $(S(0), I(0)) = (1000, 10)$ until time $t_{end} = 6$ when the pandemic has completed most of its course but is not over yet (see Figure \ref{fig:E1_trajectories}, where $I(t_{end}) = 55$). The numbers of infections in $K = 10$ time intervals of equal length are observed, corresponding to $I_{1:K} = (9, 14, 21, 42, 56, 121, 190, 162, 107, 73)$.	
+	We put the conjugate prior distributions on the parameters $\beta \sim Ga(0.001, 1)$ and $\gamma \sim Ga(1,1)$ independently, which are weakly informative.
+	The Markov chain is initialized in a low density region at $(\beta^{(0)}, \gamma^{(0)}) = (\beta/10, \gamma/10) = (0.00025, 0.1)$ and is run for $1$ million iterations. We keep every tenth draw for storage reason and set $\rho = 0.2$ so that the trajectories of $\lfloor\rho (S(0)+I(0))\rfloor = 202$ individuals are updated in each Metropolis-Hastings step. The algorithm takes less than $30$ minutes to complete on a personal laptop. 
 	
-	We examine the convergence properties of the proposed DA-MCMC algorithm with simulation studies. First, we assess the performance of the algorithm in a medium-sized population of with over $1000$ individuals. We simulate a pandemic with parameters $(\beta, \gamma) = (0.0025, 1)$, which gives $R_0 = 2.5$, starting with $(S(0), I(0)) = (1000, 10)$ until time $t_{end} = 6$ when the pandemic has completed most of its course but is not over yet (see Figure \ref{fig:fig:E1_trajectories}, where $I(t_{end}) = 55$). The numbers of infections in $K = 10$ time intervals of equal length are observed, corresponding to $I_{1:K} = (40, 111, 193, 259, 178, 93, 29, 19, 9, 6)$.	
-	We set the independent weakly informative prior distributions on the parameters $\beta \sim Ga(0.01, 1)$ and $\gamma \sim Ga(2,2)$.
-	The Markov chain is initialized in a low density region at $(\beta^{(0)}, \gamma^{(0)}) = (0.0003, 0.1) = (\beta/10, \gamma/10)$ and is run for $1$ million iterations. We keep every tenth draw for memory reason and set $\rho = 0.1$ so that the trajectories of $\rho (S(0)+I(0)) = 101$ individuals are updated in each Metropolis-Hastings step. The algorithm runs takes $25$ minutes to complete on a personal laptop.
-	
-	Figure \ref{fig:E1_no_burn_gamma_tp} shows the traceplot of the parameter $\gamma$ among the first $10000$ iterations. We observe that the Markov chain quickly migrates from the low density region where it is initialized to the high density region where it mixes well. The acceptance rate of the latent spaces proposed in the Metropolis-Hastings step is $0.18$.
-	
-	Excluding the first $10,000$ iterations of the Markov chain as a burn-in, the posterior means of $\beta$, $\gamma$ and $R_0$ are respectively $0.00304$, $0.995$ and $3.07$.
-	
-	% TODO: Results: convergence (R statistic, Geweke), credible intervals.
-	
-	% TODO: Geweke
+	Figure \ref{fig:E1_short_no_burn_gamma_tp} shows the traceplot of the parameter $\gamma$ for the first $10000$ iterations. We observe that the Markov chain quickly migrates from the low density region where it is initialized to the mode of the target distribution. Figures  \ref{fig:E1_burn_gamma_tp} and \ref{fig:E1_burn_gamma_acf}, which show the traceplot of $\gamma$ after a burn-in period of $10000$ iterations and its auto-correlation function, indicate that once the chain reaches the high density region it mixes well. The acceptance rate of the Metropolis-Hastings step is $0.21$.
+	The posterior means of $\beta$, $\gamma$ and $R_0$ are respectively $0.00217$, $0.815$ and $2.75$, respectively based on $398$, $370$ and $438$ effective sample sizes. The $90\%$ credible intervals are $(0.00166, 0.00278)$, $(0.492, 1.19)$ and $(2.26, 3.45)$ and cover the true values of the parameters. To verify the coverage of the DA-MCMC algorithm, the experiment was repeated $2000$ times independently. Tables \ref{tab:coverage} provides the nominal coverage of the $90\%$ credible intervals for the parameters $\beta$, $\gamma$ and $R_0$ along with the average and variance of the posterior means. The algorithm has the appropriate coverage, suggesting that running the chain for $1$ million iterations is sufficient to approximate the posterior distribution of the parameters.
 	
 	\begin{figure}
 		\centering
@@ -634,81 +624,162 @@
 		\hfill
 		\begin{subfigure}[b]{0.41\textwidth}
 			\centering
-			\includegraphics[width=\textwidth]{E1_no_burn_gamma_tp}
-			\caption{$\gamma$}
-			\label{fig:E1_no_burn_gamma_tp}
+			\includegraphics[width=\textwidth]{E1_short_no_burn_gamma_tp}
+			\caption{Traceplot of $\gamma$ during the transient phase}
+			\label{fig:E1_short_no_burn_gamma_tp}
 		\end{subfigure}
 		\\
 		\begin{subfigure}[b]{0.41\textwidth}
 			\centering
-			\includegraphics[width=\textwidth]{E1_no_burn_gamma_hist}
-			\caption{Log likelihood}
-			\label{fig:E1_no_burn_gamma_hist}
+			\includegraphics[width=\textwidth]{E1_burn_gamma_tp}
+			\caption{Traceplot of $\gamma$ after the transient phase}
+			\label{fig:E1_burn_gamma_tp}
 		\end{subfigure}
 		\hfill
 		\begin{subfigure}[b]{0.41\textwidth}
 			\centering
-			\includegraphics[width=\textwidth]{E1_no_burn_gamma_acf}
-			\caption{$R_0$}
-			\label{fig:\textbf{traceplot_R0}}
+			\includegraphics[width=\textwidth]{E1_burn_gamma_acf}
+			\caption{Auto-correlation function for $\gamma$}
+			\label{fig:E1_burn_gamma_acf}
 		\end{subfigure}
-		\caption{Performance of the proposed DA-MCMC in a medium-sized population $(S(0), I(0)) = (1000, 10)$.}
+		\caption{Performance of the proposed DA-MCMC in a medium-sized population $(S(0), I(0)) = (1000, 10)$ for the parameter $\gamma$.}
 		\label{fig:E1}
 	\end{figure}
 	
-	Second, the impact of the tuning parameter $\rho$ on the performance of the MCMC algorithm is evaluated. In particular, we examine the acceptance rate of the Metropolis-Hastings step, the total run time of the algorithm and the auto-correlation function of the parameters.
-	Three SIR processes with different population sizes $S(0) = (10^2, 10^3, 10^4)$ are simulated. We set $I(0) =10$, $\gamma=1$, $t_{end} = 3$ and $K = 50$ for all simulations and $\beta = (0.001, 0.01, 0.1)$ respectively for the three different population sizes. These values for $\beta$ ensure that the three processes have comparable dynamics. For each process, the DA-MCMC algorithm is run for $50,000$ iterations with different values of $\rho = (10^{-4}, 10^{-3}, 10^{-2}, 10^{-1}, 0.5, 1)$. The algorithm is run only if there is at least one event time updated per iteration, that is, if $\rho(S_0+I_0)>1$.
-	Figure \ref{fig:accept} presents the acceptance rate across the range of $\rho$.  We observe that the acceptance rate decreases as the number of event times updated per iteration and the population size increase.
-	Figure \ref{fig:run_time} shows the run time of the MCMC algorithm for these simulations. The run time increases with the population size and with $\rho$.
-	Finally, Figure \ref{fig:acf} shows the effect of $\rho$ on the auto correlation function for the parameter $\beta$ for the medium-size population process ($S(0) = 1,000$) for three values of $\rho$. We observe that updating half of the augmented data per iteration yields the lowest auto-correlation function across the values of $\rho$ considered. This suggests that, in this setting, updating the entire latent space in the Metropolis-Hastings step results in too many rejections while updating a tenth or less prevents the chain from efficiently exploring the latent space.
+    \begin{table}
+    \centering
+    \begin{tabular}{ |C{2cm}| *{3}{C{3cm}}|}
+        \hline
+        Parameter & Coverage rate of the $90\%$ credible intervals & Average of the posterior means & SD of the posterior means \\ 
+        \hline
+        $\beta$ & 0.895 & 0.0025 & 0.000255\\ 
+        $\gamma$ & 0.902 & 1.00 & 0.142 \\ 
+        $R_0$ & 0.910 & 2.54 & 0.194 \\
+        \hline
+    \end{tabular}
+    \caption{Nominal coverage of the DA-MCMC algorithm and distribution of the posterior means from $2000$ independent runs in a medium-sized population. The true values of the parameters are $(\beta. \gamma. R_0) = (0.0025, 1, 2.5)$.}
+    \label{tab:coverage}
+    \end{table}
+	
+	Second, we evaluate the impact of the tuning parameter $\rho$ on the mixing properties of the algorithm across different population sizes.
+	We simulate three SIR processes with respectively $S(0) \in \{250, 500, 1000\}$. We set $I(0)=10$, $\gamma=1$, $t_{end} = 6$ and $K = 10$ for each simulation and use $R_0 \in \{3, 2.5, 2\}$ respectively for the different population sizes. These values for $R_0$ were chosen to give pandemics with comparable dynamics. We consider the values $\rho \in \{0.02, 0.05, 0.1, 0.25, 0.5, 1\}$. For each population size and each value of $\rho$, the DA-MCMC algorithm is run for $1$ million iterations. %Note that the algorithm is not run if the number of trajectories updated $\rho(S_0+I_0)$ is smaller than $1$.
+	
+	Figure \ref{fig:E3_runtime} and \ref{fig:E3_accept} presents the run time of the algorithm and the acceptance rate in the Metropolis-Hastings step. We observe that the run time increases with the population size and with $\rho$ and that, as expected, the acceptance rate decreases as the number of trajectories updated per iteration $\rho(S(0)+I(0))$ increases.
+	Finally, Figure \ref{fig:E3_facet_ESSsecR0} shows the effect of $\rho$ on the auto correlation function for the parameter $\beta$ for the medium-size population process ($S(0) = 1,000$) for three values of $\rho$. We observe that updating half of the augmented data per iteration yields the lowest auto-correlation function across the values of $\rho$ considered. This suggests that, in this setting, updating the entire latent space in the Metropolis-Hastings step results in too many rejections while updating a tenth or less prevents the chain from efficiently exploring the latent space.
+	
 	
 	\begin{figure}
 		\centering
-		\includegraphics[scale = 0.4]{E3_facet_ESSsecR0}
-		\caption{ESS/sec for $R_0$
+		\begin{subfigure}[b]{0.42\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{E3_runtime}
+			\caption{Run time in minutes}
+			\label{fig:E3_runtime}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}[b]{0.41\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{E3_accept}
+			\caption{Acceptance rate}
+			\label{fig:E3_accept}
+		\end{subfigure}
+		\\
+		\begin{subfigure}[b]{0.41\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{E3_facet_ESSsecR0}
+			\caption{ESS/sec for $R_0$
 			%Acceptance rate of the proposed latent spaces in the Metropolis-Hastings step of the MCMC algorithm across different population sizes and values for $\rho$.
-		}
-		\label{fig:ESS_sec}
-	\end{figure}			
-	
+			}
+			\label{fig:E3_facet_ESSsecR0}
+		\end{subfigure}
+		\caption{Impact of $\rho$ on the performance of the DA-MCMC across different population sizes.}
+		\label{fig:E3}
+	\end{figure}
+		
+	Finally, we compare the performance of the proposed DA-MCMC algorithm in which event times are jointly proposed to that of a single-site-update DA-MCMC (SSU DA-MCMC) that is similar in spirit to \cite{Gibson.1998, ONeill.1999, Fintzi.2017}. The SSU DA-MCMC that we consider here is a special case of the proposed DA-MCMC in which $\rho = (S(0)+I(0))^{-1}$, so that the infection and removal times of a single individual are updated per iteration. The two algorithms are run on the same data for $1$ million iterations. Figure \ref{fig:E6} presents the traceplots for $\gamma$ as well as the auto-correlation function. We observe that the Markov chain mixes much better when event times are jointly proposed in the Metropolis-Hastings step. This is confirmed by Table \ref{tab:E6} which shows that the effective sample size per second obtained with the proposed DA-MCMC is between 7 and 20 times larger than that of the SSU DA-MCMC.
 	
 	\begin{figure}
-		\centering	
 		\centering
-		\includegraphics[width=\textwidth]{E1_burn_R0_acf}
-		\caption{$\rho = 0.1$}
-		\label{fig:acf}
+		\begin{subfigure}[b]{0.42\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{E6_no_burn_beta_tp_joint.jpg}
+			\caption{DA-MCMC}
+			\label{fig:E6_no_burn_beta_tp_joint}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}[b]{0.41\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{E6_no_burn_beta_tp_single.jpg}
+			\caption{SSU DA-MCMC}
+			\label{fig:E6_no_burn_beta_tp_single}
+		\end{subfigure}
+		\\
+		\begin{subfigure}[b]{0.42\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{E6_burn_beta_acf_joint.jpg}
+			\caption{DA-MCMC}
+			\label{fig:E6_burn_beta_acf_joint}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}[b]{0.41\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{E6_burn_beta_acf_single.jpg}
+			\caption{SSU DA-MCMC}
+			\label{fig:E6_burn_beta_acf_single}
+		\end{subfigure}
+		\caption{Traceplots and auto-correlation functions of the proposed DA-MCMC and the SSU DA-MCMC for $\beta$.}
+		\label{fig:E6}
 	\end{figure}
 	
-	%Figures: acceptance rate v. proportion of updates (see Neal, Roberts A case study in non-centering -- table 1 p.319).
+	 \begin{table}
+        \centering
+        \begin{tabular}{ |C{2cm}| *{2}{C{3cm}}|}
+            \hline
+            Parameter & DA-MCMC & SSU DA-MCMC \\ 
+            \hline
+            $\beta$ & 0.20 & 0.01 \\ 
+            $\gamma$ & 0.19 & 0.01 \\ 
+            $R_0$ & 0.38 & 0.05 \\
+            \hline
+        \end{tabular}
+        \caption{Effective sample size per second for for the proposed DA-MCMC and the SSU DA-MCMC.}
+        \label{tab:E6}
+    \end{table}
 	
 	\subsection{Ebola Outbreak in Gu\'eck\'edou, Guinea}
 	\label{sec:ebo}
 	%Outline: background; setup; results; table; figure
 	
 	We now turn to a case study concerning the Ebola outbreak in Western Africa.
-	Between the end of $2013$ and $2015$, Guinea, along with several neighboring countries, experienced the largest outbreak of the Ebola virus disease in history. The virus, which has a fatality rate of $70\%$, was responsible for the death of almost $2,000$ people in Guinea alone during the outbreak.
+	Between the end of $2013$ and $2015$, Guinea, along with several neighboring countries, experienced the largest outbreak of the Ebola virus disease in history. The virus, which has a fatality rate of $70\%$, was responsible for the death of almost $2,000$ people in Guinea alone.
 	The outbreak is believed to have originated in the Gu\'eck\'edou prefecture of Guinea at the end of November $2013$ \cite{Baize.2014}. Weekly infection incidence counts are available for each prefecture for the $73$ weeks between the end of December $2013$ and May $2015$.
-	We fit the stochastic SIR model to these incidence counts for the Gu\'eck\'edou prefecture using the MCMC algorithm proposed in this article.
-	For simplicity, we assume that the population of the prefecture forms a closed population, that the model's parameters remained constant throughout the outbreak and that the reported infections counts are exact. Applying our MCMC algorithm to stochastic epidemic models where these assumptions are relaxed is the subject of ongoing research.
-	The \textit{effective} population size is set to $n = 150,000$, roughly half of the total population in $2014$. Note that as long as the number of infections is small compared to the total population size, the exact population size does not need to be known to estimate the parameters of the model. Furthermore, since the first documented infection occurred late November, one month before the first reported incidence count \cite{Baize.2014}, the number of infectious individuals at the beginning of the observation period is set to $I(0) = 10$, with the units of time corresponding to ``days" in the analysis.
 	
-	The Markov chain is run for $50,000$ iterations and the event times of $10\%$ of the individuals are updated each iteration. The initial values of the parameters are set to $(\beta^{(1)}, \gamma^{(1)}) = (10^{-7}, 0.05)$ and the conjugate distributions in Equation \ref{eq:pri} are used as priors with $a_{\beta} = b_{\beta} = a_{\gamma} = b_{\gamma} = 0.01$ to make them weakly informative. Even for such a large population, the total run time of the algorithm was less than $100$ minutes on a personal laptop.
-	The Metropolis-Hastings step for the latent space proposals achieves a healthy $22.1\%$ acceptance rate, and the first $10,000$ iterations of the Markov chain are discarded as a burn-in.
-	Figure \ref{fig:ebola} shows the joint posterior distributions of $(\beta, \gamma)$, whose posterior means are respectively $1.06 * 10^{-6}$ and $0.109$, as well as the marginal distribution of the basic reproduction number $R_0$. This value for $\gamma$ indicates that people remain infectious for around $9$ days on average, which is consistent with existing literature. As noted by numerous authors, conditionally on partially observed data, the parameters $\beta$ and $\gamma$ appear positively correlated. The posterior distribution of $R_0$ is unimodal, relatively symmetric, and centered around $1$. A basic reproduction number close to $1$ is consistent with an outbreak that lasted several months without infecting the majority of the population.
+	We fit the stochastic SIR model to these incidence counts for the Gu\'eck\'edou prefecture using the MCMC algorithm proposed in this article.
+	For simplicity, we assume that the population of the prefecture forms a closed population, that the model's parameters remained constant throughout the outbreak and that the reported infections counts are exact.
+	\ram{Justify these assumptions.}
+	Applying the proposed DA-MCMC algorithm to stochastic epidemic models where these assumptions are relaxed is the subject of ongoing research.
+	The population size is set to $n = 292000$, the estimated population of the Gu\'eck\'edou prefecture in $2014$.
+	The units of time correspond to ``days" in the analysis and $t=0$ corresponds to Monday December 30, 2013, the first day of the observation period.
+	Since the first documented infection occurred late November \cite{Baize.2014}, one month before the first reported incidence count, we set $I(0) = 5$.
+	
+	The Markov chain is run for $1$ million iterations and the event times of $\rho=10\%$ of the individuals are updated each iteration. The initial values of the parameters are set to $(\beta^{(0)}, \gamma^{(0)}) = (10^{-7}, 0.05)$ and the conjugate distributions in Equation \ref{eq:pri} are used as priors with $a_{\beta} = b_{\beta} = a_{\gamma} = b_{\gamma} = 1$ to make them weakly informative. Even for such a large population, the total run time of the algorithm was less than $100$ minutes on a personal laptop.
+	The Metropolis-Hastings step for the latent data proposals achieves a healthy $22.1\%$ acceptance rate, and the first $50,000$ iterations of the Markov chain are discarded as a burn-in.
+	Figure \ref{fig:ebola} shows the marginal posterior distributions $\gamma$, whose means is $0.109$. This indicates that people remained infectious for around $9$ days on average, which is consistent with existing literature. 
+	%As noted by numerous authors, conditionally on partially observed data, the parameters $\beta$ and $\gamma$ appear positively correlated.
+	The posterior distribution of $R_0$ is unimodal, relatively symmetric, and centered around $1$. A basic reproduction number close to $1$ is consistent with an outbreak that lasted several months without infecting the majority of the population.
 	
 	\begin{figure}
 		\centering
 		\begin{subfigure}[b]{0.45\textwidth}
 			\centering
-			\includegraphics[width=\textwidth]{E5_expected_infection_length_tp}
-			\caption{Joint posterior density of $\theta = (\beta, \gamma)$. The $50\%$ and $90\%$ confidence regions are shown.}
-			\label{fig:density_joint}
+			\includegraphics[width=\textwidth]{E5_gamma_hist}
+			\caption{Histogram of $\gamma$}
+			\label{fig:E5_gamma_hist}
 		\end{subfigure}
 		\hfill
 		\begin{subfigure}[b]{0.49\textwidth}
 			\centering
-			\includegraphics[width=\textwidth]{E5_expected_infection_length_hist.jpg}
+			\includegraphics[width=\textwidth]{E5_gamma_acf}
 			\caption{Posterior density of $R_0$.}
 			\label{fig:density_R0}
 		\end{subfigure}
@@ -734,8 +805,10 @@
 	
 	\section{Distribution of Death Times in Linear Death Process}
 	\label{app:ldp}
-	Theorem \ref{theo:ldp} was first proved by \cite{Neuts.1971}. Since this is a result that has rarely been mentioned in the literature, we provide a proof in this appendix from (cite Ross textbook).
 	
+	Theorem \ref{theo:ldp} was first proved by by \cite{Neuts.1971}. Ross provides a simpler proof which we now give.
+	
+	\begin{proof}
 	Consider a linear pure death process with $n$ particles and individual death rate $\mu$.
 	Let $T_i$ be the time of the $i$th death. Then $W_1 = T_1 \sim \Exp(n\mu)$ and $W_i = T_i - T_{i-1} \sim \Exp((n-1)\mu)$ independently. Let $N$ be the number of deaths by time $t$. Then, 
 	\begin{align*}
@@ -747,6 +820,7 @@
 	\end{align*}
 	which corresponds to the kernels of independent exponential distribution truncated above by $t$.
 	
+	\end{proof}
 	
 	\section{Proofs}
 	\label{app:uni}
