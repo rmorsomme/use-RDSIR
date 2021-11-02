@@ -415,7 +415,7 @@
 	\Vert P^n(x,.)-\pi(.)\Vert_{TV} \le M r^n, \forall x \in \chi
 	$$
 	where $\Vert \mu \Vert_{TV}$ denotes the total variation norm of the measure $\mu$.
-	Uniform ergodicity ensures the existence of a Central Limit Theorem for $\bar{g}_m$ whenever $E_\pi |g|^2 < \infty$ \cite{Jones.2004}, that is,
+	Uniform ergodicity ensures the existence of a Central Limit Theorem for $\bar{g}_m$ whenever $E_\pi |g|^2 < \infty$ \cite{Jones.2004b}, that is,
 	$$\sqrt{m}(\bar{g}_m - E_\pi g) \Rightarrow N(0, \sigma^2_g)$$
 	for any initial distribution, for some positive, finite $\sigma^2_g$. Furthermore, uniform ergodicity implies that the batch means and spectral variance estimators of $\sigma^2_g$ are consistent (ref).
 	
@@ -452,7 +452,7 @@
 		where $x_b^*=\frac{1}{b}\left[ \frac{\Gamma(a+A)}{\Gamma(a)}\right]^{1/A} $.
 	\end{lemma}
 	\begin{proof}
-		Equation \ref{eq:ga1} is proven in Jones, Hobert (2004). For Equation \ref{eq:ga2}, note that $x_b^*$ is the only positive solution to $Ga(x;a,b) = Ga(x;a+A,b)$. Now, for all $0<x\le x_b^*$ and all $0\le\alpha\le A$, we have
+		Equation \ref{eq:ga1} is proven in \cite{Jones.2004}. For Equation \ref{eq:ga2}, note that $x_b^*$ is the only positive solution to $Ga(x;a,b) = Ga(x;a+A,b)$. Now, for all $0<x\le x_b^*$ and all $0\le\alpha\le A$, we have
 		\begin{align*}
 			\frac{Ga(x;a+A,b)}{Ga(x;a+\alpha,b)}
 			& = b^{A-\alpha}x^{A-\alpha} \frac{\Gamma(a+\alpha)}{\Gamma(a+A)} \\
@@ -463,7 +463,7 @@
 		\end{align*}
 		where $\Gamma_{d,e} = \left( \frac{\Gamma(e)}{\Gamma(d)} \right)^{\frac{1}{e-d}}$ is a geometric average,
 		and where the last inequality holds because $\Gamma_{a,a+A}\le\Gamma_{a+\alpha, a+A}$.
-		The case $x>x_b^*$ can be shown similarly.
+		The case $x>x_b^*$ can be shown similarly. Figure \ref{fig:gam1} illustrates these two results.
 	\end{proof}
 	
 	
