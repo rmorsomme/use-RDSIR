@@ -415,9 +415,9 @@
 	\Vert P^n(x,.)-\pi(.)\Vert_{TV} \le M r^n, \forall x \in \chi
 	$$
 	where $\Vert \mu \Vert_{TV}$ denotes the total variation norm of the measure $\mu$.
-	Uniform ergodicity ensures the existence of a Central Limit Theorem for $\bar{g}_m$ whenever $E_\pi |g|^2 < \infty$ (ref), that is,
-	$$\sqrt{m}(\bar{g}_m - E_\pi g) \Rightarrow N(0, \sigma^2)$$
-	for some positive, finite $\sigma^2$. Furthermore, uniform ergodicity implies that the batch means and spectral variance estimators of $\sigma^2$ are consistent (ref).
+	Uniform ergodicity ensures the existence of a Central Limit Theorem for $\bar{g}_m$ whenever $E_\pi |g|^2 < \infty$ (Jones, 2004), that is,
+	$$\sqrt{m}(\bar{g}_m - E_\pi g) \Rightarrow N(0, \sigma^2_g)$$
+	for any initial distribution for some positive, finite $\sigma^2_g$. Furthermore, uniform ergodicity implies that the batch means and spectral variance estimators of $\sigma^2_g$ are consistent (ref).
 	
 	
 	%First, the Markov chain  $\{(\theta^{(m)}, \z^{(m)})\}_m$ is Harris recurrent and converges to the target posterior distribution. Indeed, by construction, the joint posterior density $\pi(\theta, \z|\Y)$ is invariant for the Gibbs kernel $P_\theta$ and the Metropolis-Hastings kernel $P_\z$ and the density of the composite kernel $P = P_\theta P_\theta$ is strictly positive, implying that the chain is aperiodic and $\pi$-irreducible. Together with the existence of an invariant distribution, $\pi$-irreducibility implies that the chain is positive Harris recurrent.
@@ -666,7 +666,7 @@
 	We simulate three SIR processes with $S(0) \in \{250, 500, 1000\}$. We set $I(0)=10$, $\gamma=1$, $t_{end} = 6$ and $K = 10$ for each simulation and use $R_0 \in \{3, 2.5, 2\}$ respectively for the different population sizes. These values for $R_0$ were chosen to give pandemics with comparable dynamics. We consider the values $\rho \in \{0.02, 0.05, 0.1, 0.25, 0.5, 1\}$. For each population size and each value of $\rho$, the DA-MCMC algorithm is run for $1$ million iterations. %Note that the algorithm is not run if the number of trajectories updated $\rho(S_0+I_0)$ is smaller than $1$.
 	
 	Figure \ref{fig:E3_runtime} and \ref{fig:E3_accept} present the run time of the algorithm and the acceptance rate in the Metropolis-Hastings step. We observe that the run time increases with the population size and with $\rho$ and that, as expected, the acceptance rate decreases as the number of trajectories updated per iteration $\rho(S(0)+I(0))$ increases.
-	Finally, Figure \ref{fig:E3_facet_ESSsecR0} shows the effect of $\rho$ on the auto correlation function for the parameter $\beta$ for the medium-size population process ($S(0) = 1,000$) for three values of $\rho$. We observe that updating half of the augmented data per iteration yields the lowest auto-correlation function across the values of $\rho$ considered. This suggests that, in this setting, updating the entire latent space in the Metropolis-Hastings step results in too many rejections, while updating a tenth or less prevents the chain from efficiently exploring the latent space.
+	Finally, Figure \ref{fig:E3_facet_ESSsecR0} shows the effect of $\rho$ on the mixing properties of the Markov chain. We observe for a population of $250$ individuals, updating the entire latent data in the MH step provides the best mixing; as the population size increases, the optimal value of $\rho$ decreases. This suggests that for a population of $1000$ individuals, updating the whole latent data results in too many rejections, while updating less than $10$\% makes the updates too small to efficiently explore the latent space.
 	
 	
 	\begin{figure}
@@ -693,7 +693,7 @@
 			}
 			\label{fig:E3_facet_ESSsecR0}
 		\end{subfigure}
-		\caption{Impact of $\rho$ on the performance of the DA-MCMC across different population sizes.}
+		\caption{Impact of $\rho$ on the performance of the DA-MCMC in a population of size $250$ (solid), $500$ (dotted) and $1000$ (dashed).}
 		\label{fig:E3}
 	\end{figure}
 		
