@@ -1,13 +1,14 @@
 
 library(PDSIR)
 
+# E1
 load("Output/RDATA/E1.RDATA")
 
 summary_E1 <- experiment_1_output_analysis(
   output_E1, plot_id = "E1_short", path = "Output/Figures/E1", n_max = 1e4, burnin = 1e3
 )
 summary_E1 <- experiment_1_output_analysis(
-  output_E1, plot_id = "E1", path = "Output/Figures/E1"
+  output_E1, plot_id = "E1", path = "Output/Figures/E1", burnin = 1e4
 )
 
 print(list(
@@ -17,7 +18,7 @@ print(list(
   output_E1$SIR$MLE
 ))
 
-
+# E3
 load("Output/RDATA/E3.RDATA")
 experiment_3_output_analysis(output_E3, path = "Output/Figures/E3")
 
@@ -32,7 +33,9 @@ for(i in 3 : 200) {
 summary_E4 <- experiment_4_output_analysis(results, path = "Output/Figures/E4")
 
 load("Output/RDATA/E5.RDATA")
-summary_5 <- experiment_5_output(output_E5, path = "Output/Figures/E5", burnin = 1e4)
+summary_5 <- experiment_5_output(
+  output_E5, path = "Output/Figures/E5", burnin = 5e4, thin = 10
+  )
 
 load("Output/RDATA/E6_joint.RDATA")
 load("Output/RDATA/E6_single.RDATA")

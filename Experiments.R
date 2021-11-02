@@ -11,9 +11,9 @@ run_E6 <- FALSE
 #
 # Experiments
 if(run_E1){ # Proof of Concept
-  set.seed(1)
+  set.seed(0)
   output_E1 <- experiment_1_proof_of_concept(
-    N = 1e6, save_fig = FALSE, thin = 10,
+    N = 1e6, save_fig = FALSE, thin = 10, rho = 1/5,
     theta_0_factor = 0.1
     )
   save(output_E1, file = "Output/RDATA/E1.RDATA")
