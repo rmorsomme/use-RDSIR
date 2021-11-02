@@ -1,4 +1,3 @@
-%\documentclass{article}
 %\usepackage[utf8]{inputenc}
 %\usepackage[round,authoryear]{natbib}
 
@@ -47,8 +46,8 @@
 	\maketitle
 	
 	\begin{abstract}
-		Stochastic epidemic models provide an interpretable probabilistic description of the spread of a disease through a population. Yet, fitting these models in missing data settings is a notably difficult task; in particular, when the epidemic process is only partially observed, the likelihood of many classic models becomes intractable. To remedy this issue, this article introduces a data-augmented MCMC algorithm for fast and exact inference under the stochastic SIR model given discretely observed incidence counts. In a Metropolis-Hastings step, the algorithm jointly proposes event times of the augmented data according to a stochastic process whose dynamics closely resemble those of the SIR process, and from which we can efficiently generate an epidemic that is compatible with the observed data. Not only is the algorithm fast, but since the augmented data are generated from a very faithful approximation of the target epidemic model, the sampler can update large portions of the augmented data per iteration without lowering the acceptance rate prohibitively. We find that the method explores the high-dimensional latent space efficiently, and show that the Markov chain underlying the algorithm is uniformly ergodic. % While existing exact MCMC approaches become intractable for populations greater than a few thousand individuals,
-		The proposed algorithm enables exact inference and scales to outbreaks in populations of hundreds of thousands, even on a single laptop. We validate its performance via thorough simulation experiments, consider and a case study on the $2014$ Ebola outbreak in Western Africa. % in Gu\'eck\'edou, Guinea. %, in a population of $150,000$ individuals. test. 
+		Stochastic epidemic models provide an interpretable probabilistic description of the spread of a disease through a population. Yet, fitting these models in missing data settings is a difficult task; in particular, when the epidemic process is only partially observed, the likelihood of many classic models becomes intractable. To remedy this issue, this article introduces a data-augmented MCMC algorithm for fast and exact inference under the stochastic SIR model given discretely observed incidence counts. In a Metropolis-Hastings step, the algorithm jointly proposes event times of the augmented data according to a stochastic process whose dynamics closely resemble those of the SIR process, and from which we can efficiently generate an epidemic that is compatible with the observed data. Not only is the algorithm fast, but since the augmented data are generated from a very faithful approximation of the target epidemic model, the sampler can update large portions of the augmented data per iteration without lowering the acceptance rate prohibitively. We find that the method explores the high-dimensional latent space efficiently, and show that the Markov chain underlying the algorithm is uniformly ergodic. % While existing exact MCMC approaches become intractable for populations greater than a few thousand individuals,
+		The proposed algorithm enables exact inference that scales to outbreaks in populations of hundreds of thousands, even on a single laptop. We validate its performance via thorough simulation experiments, consider and a case study on the $2014$ Ebola outbreak in Western Africa. % in Gu\'eck\'edou, Guinea. %, in a population of $150,000$ individuals. test. 
 	\end{abstract}
 	\keywords{Compartmental model; incidence data; exact posterior inference; data-augmented MCMC; likelihood-based methods; uniform ergodicity}
 	
@@ -57,7 +56,7 @@
 	
 	The efficient control of a disease outbreak requires an understanding of the mechanisms underlying its spread. Mechanistic compartmental models, which describe the transition of individuals between various states, have a long mathematical modeling tradition in epidemiology \cite{Kermack.1927}. Due to their interpretability, they are commonly used to describe the dynamics of an outbreak and typically serve as the main source of information for predicting the course of an outbreak and identifying interventions that could be effective. Originally, deterministic versions of the models were employed by mathematicians and epidemiologists. These models are simple to analyze, but fail to capture the inherent randomness in the spread of a disease. For instance, they cannot be used to estimate the probability of a large-scale outbreak or its expected duration, and do not allow for uncertainty quantification when used within inferential procedures. Stochastic epidemic models (SEM), on the other hand, incorporate the random nature of infections and recoveries and therefore provide more realistic descriptions of the spread of a disease, and in turn more reliable inference from observed data.
 	
-	Conducting inference on SEMs is, however, a notably difficult task. Challenges stem from the fact that the observed data typically provide incomplete information on a process that evolves continuously through time, making the likelihood of the model intractable. Were the infection and recovery times of each individual of the population observed, conducting inference on SEMs would be straightforward, but this is rarely the case. In practice, one often has access to either incidence data such as weekly counts of new infections, or prevalence data such as the numbers of people infectious at discrete reporting times. For instance, the $2013$–$2016$ outbreak of Ebola virus reported over $10,000$, mainly in three Western African countries (Guinea, Liberia and Sierra Leone). This outbreak was characterized by the large number of infections that occurred after individuals were tested positive for the virus, giving rise to noisy incidence data. Numerous infections happened at the hospitals where infected individuals received a treatment as well as at the funerals of people deceased from the virus\footnote{In most regions impacted by the Ebola virus, touching the body of the deceased person during funerals is a tradition. Since the Ebola virus is transmitted via bodily fluids such as sweat, numerous infections occurred at funerals.}. 
+	Conducting inference on SEMs is, however, a notably difficult task. Challenges stem from the fact that the observed data typically provide incomplete information on a process that evolves continuously through time, making the likelihood of the model intractable. Were the infection and recovery times of each individual of the population observed, inference would be straightforward, but this is rarely the case. In practice, one often has access to either incidence data such as weekly counts of new infections, or prevalence data such as the numbers of people infectious at discrete reporting times. For instance, the $2013$–$2016$ outbreak of Ebola virus reported over $10,000$, mainly in three Western African countries (Guinea, Liberia and Sierra Leone). This outbreak was characterized by the large number of infections that occurred after individuals were tested positive for the virus, giving rise to noisy incidence data. Numerous infections happened at the hospitals where infected individuals received a treatment as well as at the funerals of people deceased from the virus\footnote{In most regions impacted by the Ebola virus, touching the body of the deceased person during funerals is a tradition. Since the Ebola virus is transmitted via bodily fluids such as sweat, numerous infections occurred at funerals.}. 
 	It therefore seems appropriate to model a positive test for the virus as an indication that the individual became infectious some time prior to the test rather than as a removal time \jx{to do: stronger transition tying back to goal of partial observed inference}. 
 	
 	More specifically, the marginal likelihood of such partially observed data becomes a bottleneck, as it requires a large integration step that accounts for all possible configurations of the missing. In particular, direct computation of this likelihood requires the transition probabilities between observation times for which no closed form is available. \jx{to do: cite recent papers from Simon Spencer's group too that do so for discrete-time models, and mention classical matrix exponentiation being intractable}. Numerical methods to obtain transition probabilities have only recently been developed in \cite{Ho.2018b, Ho.2018}, but the high computational costs limit their algorithm to moderate sized outbreaks.
@@ -74,9 +73,9 @@
 	\label{sec:sir}
 	%Outline: stochastic SIR; X; parameters; transition rate12
 	
-	Our point of departure is to consider the stochastic SIR model -- also referred to as the general epidemic model -- which offers a parsimonious and interpretable representation of the mechanistic, population-level dynamics of an epidemic. The stochastic SIR model is a compartmental model in which the individuals of a population transition through three types or compartments: susceptible (S), infectious (I) and removed (R). The only possible moves are from S to I (infections) and from I to R (removals). A susceptible individual becomes infected through contact with an infectious individual. Once infected, she is immediately infectious and remains so for some period of time after which she is removed from the process without the possibility of reinfection. In this formulation, demographic dynamics such as births and deaths of individuals are ignored since they usually occur at a much slower rate than infections and removals.
+	Our point of departure is to consider the stochastic SIR model -- also referred to as the general stochastic epidemic model (Bailey, 1975) -- which offers a parsimonious and interpretable representation of the mechanistic dynamics of an epidemic. The stochastic SIR model is a compartmental model in which the individuals of a population transition through three types or compartments: susceptible (S), infectious (I) and removed (R). The only possible moves are from S to I (infections) and from I to R (removals). A susceptible individual becomes infected through contact with an infectious individual. Once infected, she is immediately infectious and remains so for some period of time after which she is removed from the process without the possibility of reinfection. In this formulation, demographic dynamics such as births and deaths of individuals are ignored since they usually occur at a much slower rate than infections and removals.
 	
-	Assuming a closed population with a fixed size $n$, the stochastic SIR model consists of a continuous-time vector-valued process
+	Assuming a closed population of size $n$, the stochastic SIR model consists of a continuous-time vector-valued process
 	\begin{equation}
 		\label{eq:X}
 		\X = \left\lbrace \X(t), t>0\right\rbrace \in \chi_{\X}
@@ -94,15 +93,14 @@
 	\end{cases}
 	,\quad \iton
 	$$
-	denotes the status (compartment) of individual $j$ at time $t$ with $\tau^I_j$ and $\tau^R_j$ respectively the infection and removal times of individual $j$. If individual $j$ never becomes infectious, then we set $\tau^I_j = \tau^R_j = \infty$ and $X_j(t) = s$ for $t \in [0, \infty)$. Here $\chi_{\X}$ denotes the set of valid trajectories compatible with the evolution of a disease---that is, the set of trajectories in which no infection occurs whenever the infectious compartment is depleted :
+	denotes the status (compartment) of individual $j$ at time $t$ with $\tau^I_j$ and $\tau^R_j$ respectively the infection and removal times of individual $j$. If individual $j$ never becomes infectious, we set $\tau^I_j = \tau^R_j = \infty$ and $X_j(t) = s$ for $t \in [0, \infty)$. Here $\chi_{\X}$ denotes the set of trajectories compatible with the evolution of a disease---that is, the set of trajectories in which no infection occurs whenever the infectious compartment is depleted:
 	\begin{equation}
 		\label{eq:chi}
 		\chi_{\X} = \{X:X(t) \in \{s,r\}^n \Rightarrow X(t+u) = X(t), \forall u>0 \}.
 	\end{equation}
 	
-	The stochastic SIR model is specified by the rates at which individuals move from one compartment to another. If we assume a homogeneously mixing population where contacts between individuals occur independently at some rate constant $\beta$, then the contacts between two given individuals are said to follow a Poisson process with rate $\beta$. This parameter can be interpreted as the \textit{infection rate}: when a susceptible individual comes into contact with an infectious individual, she immediately becomes infectious.
-	If we also make the common assumption that the infectious periods follow independent exponential distributions with rate $\gamma$, then the process \eqref{eq:X} is a time–homogeneous continuous time Markov chain, whose instantaneous transition rates 
-	%from state $\x$ to $\x'$
+	The stochastic SIR model is specified by the rates at which individuals move from one compartment to another. If we assume a homogeneously mixing population where contacts between individuals occur independently at some constant rate $\beta$, the contacts between two given individuals are said to follow a Poisson process with rate $\beta$. This parameter can be interpreted as the \textit{infection rate}: when a susceptible individual comes into contact with an infectious individual, she immediately becomes infectious.
+	If we also make the common assumption that the infectious periods follow independent exponential distributions with rate $\gamma$, then the process \eqref{eq:X} is a time–homogeneous continuous time Markov chain, whose instantaneous transition rates
 	are given by the matrix $\Lambda = [\lambda_{\x, \x'}]$ with
 	$$
 	\lambda_{\x, \x'} = 
@@ -128,8 +126,8 @@
 	\subsection{Inference with Complete Data}
 	\label{sec:icd}
 	%Outline: complete-data likelihood; MLE; gamma conjugacy
-	
-	When the Markov process \eqref{eq:X} is completely observed until time $t_{end}$, we obtain the following likelihood
+	\jx{Need some citations here for form of likelihood, conjugate/MLE forms, etc} 
+	When the Markov process \eqref{eq:X} is completely observed until time $t_{end}$, we obtain the following likelihood \ram{ref for likelihood}
 	\begin{align}
 		L(\theta; \X)
 		& = \prod_{j \in \mathcal{I}} \beta I(\tau^I_j) \prod_{k \in \mathcal{R}} \gamma \exp\left\lbrace - \int_{0}^{t_{end}}\beta I(t)S(t) + \gamma I(t) dt \right\rbrace  \nonumber \\
@@ -140,31 +138,27 @@
 	To establish notation,
 	$\theta = (\beta, \gamma) \in \chi_{\theta}$ are the model parameters 
 	and $\chi_{\theta} = (0, \infty) \times (0, \infty)$ denotes the parameter space, 
-	the index sets $\mathcal{I} = \{j\in (1, \cdots, n): \tau^I_j \in (0, t_{end}]\}$ and $\mathcal{R} = \{j\in (1, \cdots, n): \tau^R_j \in (0, t_{end}]\}$ denote the individuals that are respectively infected and removed during the observation interval $(0, t_{end}]$,
+	the index sets $\mathcal{I} = \{j: \tau^I_j \in (0, t_{end}]\}$ and $\mathcal{R} = \{j: \tau^R_j \in (0, t_{end}]\}$ denote the individuals that are respectively infected and removed during the observation interval $(0, t_{end}]$,
 	$n_I = |\mathcal{I}|$ and $n_R = |\mathcal{R}|$ are the numbers of observed infections and removals,
-	and	$S(t) = \#\{X_i(t) = S\}$ is the number of susceptible individuals at time $t$.
+	and	$S(t) = \#\{X_i(t) = s\}$ is the number of susceptible individuals at time $t$.
 	
-	It is straightforward to conduct inference in this continuously observed scenario. In particular, the likelihood \eqref{eq:cdl} belongs to the exponential family, and maximum likelihood estimates of its parameters can be expressed in terms of the sufficient statistics defined above as
+	It is straightforward to conduct inference in this continuously observed scenario. The likelihood \eqref{eq:cdl} belongs to the exponential family, and maximum likelihood estimates of its parameters can be expressed in terms of the sufficient statistics defined above as \ram{ref for exponential family and MLE}
 	$$\hat{\beta}_{MLE} = \dfrac{n_I}{ \int_{0}^{t_{end}} I(t)S(t)dt}, \quad \hat{\gamma}_{MLE} = \dfrac{n_R}{\int_{0}^{t_{end}} I(t)dt}.$$
-	Since the functions $I$ and $S$ are constant between event times, the two integrals correspond to finite sums which are straightforward to compute.
-	Furthermore, in a Bayesian context, inference is facilitated by the conjugacy with the Gamma distribution: if we let the parameters follow independent Gamma prior distributions
+	Note that since the functions $I$ and $S$ are constant between event times, the two integrals correspond to finite sums which are straightforward to compute.
+	Furthermore, in a Bayesian context, inference is facilitated by the conjugacy with the Gamma distribution: if we use independent Gamma prior distributions
 	\begin{equation}
 		\label{eq:pri}
 		\beta \sim Ga(a_{\beta}, b_{\beta}), \qquad \gamma \sim Ga(a_{\gamma}, b_{\gamma})
 	\end{equation}
-	where $Ga(a,b)$ denotes the parametrization with mean $a/b$ and variance $a/b^2$, then the posterior distributions of the parameters are independent Gamma distributions
+	where $Ga(a,b)$ denotes the parametrization with mean $a/b$ and variance $a/b^2$, we obtain independent Gamma posterior distributions
 	\begin{equation}
-		\label{eq:pdb}
-		\beta | \X \sim Ga\left( a_{\beta} + n_I, b_{\beta} + \int_{0}^{t_{end}} I(t)S(t) dt\right)
-	\end{equation}
-	and
-	\begin{equation}
-		\label{eq:pdg}
+		\label{eq:posterior_theta}
+		\beta | \X \sim Ga\left( a_{\beta} + n_I, b_{\beta} + \int_{0}^{t_{end}} I(t)S(t) dt\right), \qquad 
 		\gamma | \X \sim Ga\left( a_{\gamma} + n_R, b_{\gamma} + \int_{0}^{t_{end}} I(t) dt\right)
 	\end{equation}
-	from which one can easily generate independent values with a Monte Carlo sampler to explore the posterior distribution of parameters $\pi(\theta|\X)$.
+	from which one can easily generate independent values with a Monte Carlo sampler to explore the posterior distribution of parameters $\pi(\theta|\X)$ \cite{Tierney.1994}.
 	
-	% the basic reproduction number $R_0 = S(0) \beta / \gamma$, which corresponds to the average number of secondary infections generated by an infectious individual in a susceptible population
+	% the basic reproduction number $R_0 = S(0) \beta / \gamma$, which corresponds to the expected number of secondary infections caused by an infectious individual in a susceptible population. $\R_0 = S(0) \beta/\gamma$.
 	
 	
 	
@@ -174,22 +168,22 @@
 	
 	%	(New in this section: I am motivating the type of observed data  $T_{1:K}$ that we consider.)
 	
-	In practice, inference is complicated by the fact that the process \eqref{eq:X} is only partially observed. When we do not observe all epidemic events, which is virtually always the case with real data, we do not have access to the sufficient statistics needed to evaluate the likelihood \eqref{eq:cdl}. Various types of partially observed data typify real data and have been considered in the literature, such as observing only the removal times \cite{Gibson.1998, ONeill.1999} or the number of infectious individuals in the population at discrete points in time \cite{Fintzi.2017}. For instance, the former arise in animal experiments in which positive cases are immediately isolated from the rest of the population and no longer contribute to disease spread. In such cases, exact times of removals are known, but such information is unavailable in typical observational studies.
+	In practice, inference is complicated by the fact that the epidemic process \eqref{eq:X} is typically only partially observed. When we do not observe all event times, we do not have access to the sufficient statistics needed to evaluate the likelihood \eqref{eq:cdl}. Various types of partially observed data typify real data and have been considered in the literature, such as observing only the removal times \cite{Gibson.1998, ONeill.1999} or the number of infectious individuals in the population at discrete points in time \cite{Fintzi.2017}. For instance, the former arises in animal experiments in which positive cases are immediately isolated from the rest of the population and no longer contribute to disease spread. In such cases, exact times of removals are known, but such information is unavailable in typical observational studies.
 	
-	In this article, we focus on partially observed \textit{incidence} counts of infections at discrete points in time. Such data arise when an infectious individual may be identified some time after onset, and may continue to infect others even after being tested positive for the disease. %This was for instance the case during the $2013$–$2016$ outbreak of Ebola virus. This pandemic was unprecedented in scale, with more than $10,000$ reported deaths, mainly in three Western African countries (Guinea, Liberia and Sierra Leone). This outbreak was characterized by the large number of infections that occurred after individuals were tested positive for the virus. Numerous infections happened at the hospitals where infected individuals received a treatment as well as at the funerals of people deceased from the virus\footnote{In most regions impacted by the Ebola virus, touching the body of the deceased person during funerals is a tradition. Since the Ebola virus is transmitted via bodily fluids such as sweat, numerous infections occurred at funerals.}. 
+	In this article, we consider partial data consisting of \textit{incidence} counts of infections during given time intervals, e.g.\ weekly infection counts. Such data arise when an infectious individual is identified some time after onset and may continue to infect others after being tested positive for the disease. %This was for instance the case during the $2013$–$2016$ outbreak of Ebola virus. This pandemic was unprecedented in scale, with more than $10,000$ reported deaths, mainly in three Western African countries (Guinea, Liberia and Sierra Leone). This outbreak was characterized by the large number of infections that occurred after individuals were tested positive for the virus. Numerous infections happened at the hospitals where infected individuals received a treatment as well as at the funerals of people deceased from the virus\footnote{In most regions impacted by the Ebola virus, touching the body of the deceased person during funerals is a tradition. Since the Ebola virus is transmitted via bodily fluids such as sweat, numerous infections occurred at funerals.}. 
 	%It therefore seems appropriate to model a positive test for the virus as an indication that the individual became infectious some time prior to the test rather than as a removal time.
-	Consider an observation schedule $t_{0:K}$ ($K \ge 1$) with $0 = t_0 < t_1 < \dots < t_K = t_{end}$. The observed data consist of the $K$-dimensional vector $\Y = I_{1:K}$ where $I_k = \#\{\tau^I_j \in (t_{k-1}, t_k]\}$ is the number of infections during the $k^{\text{th}}$ time interval.
-	For simplicity, we further assume that the initial configuration of the population $\X(0)$ is known.
+	Given an observation schedule $t_{0:K}$ ($K \ge 1$) with $0 = t_0 < t_1 < \dots < t_K = t_{end}$, the observed data consist of the $K$-dimensional vector $\Y = I_{1:K}$ where $I_k = \#\{\tau^I_j \in (t_{k-1}, t_k]\}$ is the number of infections during the $k^{\text{th}}$ interval.
+	%For simplicity, we further assume that the initial configuration of the population $\X(0)$ is known.
 	
-	If we adopt a Bayesian approach, the posterior distribution of the parameters given the observed data is formally related to the joint posterior via integration:
+	Under a Bayesian approach, the posterior distribution of the parameters given the observed data is formally related to the joint posterior via integration:
 	\begin{equation}
 		\label{eq:pdl}
 		\pi(\theta|\Y) 
-		\, \, \propto \, \, L(\theta; \Y)\pi(\theta) \, \, = \, \, \int_{\chi^*_{\X}} L(\theta; \x) \pi(\theta) d\x
+		\, \, \propto \, \, L(\theta; \Y)\pi(\theta) \, \, = \, \, \int_{\chi^*_{\X}} L(\theta; \x) d\x \pi(\theta)
 	\end{equation}
-	where $\pi(\theta)$ is the prior distribution on the parameters $\theta$ and
+	where $\pi(\theta)$ is the prior distribution on $\theta$, and
 	$\chi^*_{\X} \subset \chi_{\X}$ is the set of trajectories of the process \eqref{eq:X} that are compatible with the observed data $\Y$.
-	The partial data likelihood $L(\theta; \Y)$ therefore consists of a high-dimensional integral over all epidemic paths compatible with the observed data. This marginalization step has no closed form solution, and presents computational challenges even for a population of moderate size.
+	The partial data likelihood $L(\theta; \Y)$ therefore consists of a high-dimensional integral over all epidemic paths compatible with the observed data. This marginalization step has no known closed form solution and presents computational challenges even for a population of moderate size.
 	
 	\subsection{Prior Work}
 	\label{sec:pre}
@@ -197,55 +191,63 @@
 	More recently, researchers have based their computation on a simpler process that approximates the model's dynamics and whose likelihood in the presence of partially observed data is tractable. Popular approximations include chain binomial models \cite{Greenwood.1931, Abbey.1952}, diffusion processes \cite{Cauchemez.2008, Fintzi.2020} and Gaussian processes \cite{Jandarov.2014}. While these approximation-based approaches bypass the intractability of the partial data likelihood \ref{eq:pdl}, the assumptions on which they are based are questionable when the population is small, and, as a result, the dynamic of the stochastic process differs from its asymptotic behavior.
 	
 	Since the popularization of Markov chain Monte Carlo methods (MCMC) in the field of statistics \cite{Tanner.1987, Gelfand.1990, Tierney.1994}, researchers have developed sampling-based methods to directly work with the SIR likelihood instead of an approximation thereof. MCMC algorithms fall into two categories: model-based forward simulation and data augmented MCMC (DA-MCMC).
-	Particle filtering \cite{King.2015} is an example of the former category that is extremely popular among practitioners. Its plug-and-play feature makes it applicable to a wide variety of models. However, model-based forward simulation suffers from two drawbacks: simulating data from a model as complex as the SEM that is compatible with the observed data is prohibitively slow, and these methods can fail to converge when the model does not fit the data well. Approximate Bayesian Computation (ABC) \cite{McKinley.2018} offers a solution to the latter problem, but its inference is based on an approximation of the model's likelihood. As a result, the inference is inevitably biased, and it is difficult to quantify how closely the approximate posterior resembles the original target distribution.
+	Particle filtering \cite{King.2015} is an example of the former category that is extremely popular among practitioners. Its plug-and-play feature makes it applicable to a wide variety of models. However, model-based forward simulation suffers from two drawbacks: simulating data from a model as complex as the SEM that is compatible with the observed data is prohibitively slow, and these methods can fail to converge when the model does not fit the data well. Approximate Bayesian Computation (ABC) \cite{McKinley.2018} offers a solution to the latter problem, but its inference is based on an approximation of the model's likelihood. As a result, the inference is inevitably biased, and it is difficult to evaluate the degree of approximation involved. %quantify how closely the approximate posterior resembles the original target distribution.
 	
-	The second family of MCMC-based inferential methods treats the unobserved event times as nuisance parameters; that is, the observed data are augmented with latent data that consist of the times and types of unobserved epidemic events. Researchers have developed algorithms to explore this latent space efficiently. Early attempts employed reversible-jump MCMC \cite{Green.1995} to explore models with different numbers of unobserved events \cite{Gibson.1998, ONeill.1999}. Their algorithm augments the observed data which consist of the recovery times with the unobserved infection times and explores the latent space by inserting, deleting or uniformly moving an infection time in each iteration of the MCMC algorithm. 
-	More recently, Fintzi et al. \cite{Fintzi.2017} proposed a MCMC algorithm to conduct inference with discretely observed infection counts prevalence counts. They constructed latent data consisting of the infection and recovery times of each individual. The algorithm explores this latent space by updating the event times of an individual in each iteration of the algorithm according to the exact dynamics of the stochastic process. These DA-MCMC methods suffer from poor mixing in the presence of large epidemics. Since they update a single element of the latent data per iteration, the resulting Markov chains fail to explore the latent space efficiently. Although the update of multiple event times per iteration in \cite{Pooley.2015} and the non-centered parameterization in \cite{Neal.2005} improves mixing, the gains are modest and the Markov chains still suffer from a high level of auto-correlation. %Furthermore, generating event times from the exact dynamics of the SEM in \cite{Fintzi.2017} is computationally costly.
+	The second family of MCMC-based inferential methods treats the unobserved event times as nuisance parameters; that is, the observed data are augmented with latent data that consist of the times and types of unobserved epidemic events.
+	Researchers have mostly focused on the development of better and more efficient proposal schemes to explore this high-dimensional latent space efficiently. Early attempts employed reversible-jump MCMC \cite{Green.1995} to explore models with different numbers of unobserved events \cite{Gibson.1998, ONeill.1999}. These authors augment the observed data which consist of the recovery times with the unobserved infection times and explore the latent space by uniformly inserting, deleting or moving an infection time in each iteration of the MCMC algorithm. 
+	More recently, Fintzi et al. \cite{Fintzi.2017} proposed a MCMC algorithm to conduct inference with discretely observed infection prevalence counts. They constructed latent data consisting of the infection and recovery times of each individual. The algorithm explores this latent space by updating the event times of an individual in each iteration of the algorithm. These event times are sampled from a distribution that approximate the exact dynamics of the stochastic process.
+	In the discrete-time setting, Touloupou et al. \cite{Touloupou.2020} used a Gibbs sampler to update the trajectory of an individual per iteration.
+	These DA-MCMC methods suffer from poor mixing in the presence of large epidemics. Since they update a very small number of latent data per iteration, the resulting Markov chains is sticky: it makes very small jumps in the latent space and therefore requires a large number of iterations to explore it completely.
+	Although the update of a slightly larger number of event times per iteration in \cite{Pooley.2015} and the non-centered parameterization of \cite{Neal.2005} may improve the performance, the gains are modest; the Markov chains still suffer from a high level of auto-correlation and do not possess satisfactory mixing properties in populations over a few hundred individuals.
+	Even though these DA-MCMC algorithms may update more than one element per iteration, we will refer to them as \textit{single}-site DA-MCMC algorithms to contrast them to the proposed method in which the entire latent data are jointly updated.
 	
-	%An advantage of DA-MCMC methods is the possibility to conduct inference in more complex models. For instance, Streftaris and Renshaw \cite{Streftaris.2002} generalized the approach of \cite{Gibson.1998} to a non-Markovian stochastic SIR model where the amount of time spent infectious is not necessarily exponentially distributed but follows an arbitrary distribution, and Bu et al. \cite{Bu.2020} analyzed models in which the population does not mix homogeneously but is characterized by a dynamic social network, and Kypraios (2018, 2020) model the infection dynamics nonparameterically.
+	%An advantage of DA-MCMC methods is the possibility to conduct inference in more complex models. For instance, Streftaris and Renshaw \cite{Streftaris.2002} generalized the approach of \cite{Gibson.1998} to a non-Markovian stochastic SIR model where the amount of time spent infectious is not necessarily exponentially distributed but follows an arbitrary distribution, and Bu et al. \cite{Bu.2020} analyzed models in which the population does not mix homogeneously but is characterized by a dynamic social network, and Kypraios  model the infection dynamics in a nonparameteric framework.
 	
 	\section{Exact Inference with a  Data-Augmented Approach}
 	\label{sec:con}
 	
 	We adopt a data-augmented MCMC approach that bridges the challenging partially observed setting to the tractable complete data likelihood by way of latent variables. In particular, our method hinges on the efficacy of a carefully designed proposal process for the latent variables that faithfully approximates the original process dynamics. 
 	%By correcting with a Metropolis-Hastings step
-	The sampler targets the exact posterior of the model given partially observed incidence data and enjoys the efficiency of fast proposals in the high-dimensional latent space as well as fast computations involving the complete data likelihood.
+	The Metropolis-Hastings sampler targets the exact posterior of the model given partially observed incidence data, and enjoys the efficiency of fast proposals in the high-dimensional latent space as well as fast computations involving the complete data likelihood.
 	
-	As shown in Section \ref{sec:icd}, the complete data likelihood \eqref{eq:cdl} is amenable to computation. This suggests augmenting the observed data $\Y$ with latent data $\Z$ such that the likelihood $L(\theta; (\Y, \Z))$ has the closed form \eqref{eq:cdl} and constructing a Markov chain $\{(\theta^{(m)}, \Z^{(m)})\}_{m=0}^M$ with state space $\chi = \chi_{\theta} \times \chi_{\Z}$ whose stationary distribution is the joint posterior distribution $\pi(\theta, \X|\Y)$ \cite{Gibson.1998, ONeill.1999, Fintzi.2017}. We consider the latent data $\Z = \left\lbrace (z^I_j, z^R_j)\right\rbrace_{j=1}^{n} \in \chi_{\Z}$ which consist of the times and types of unobserved epidemic events, where the infection and removal times for individual $j$ are
+	As shown in Section \ref{sec:icd}, the complete data likelihood \eqref{eq:cdl} is amenable to computation. This suggests augmenting the observed data $\Y$ with latent data $\Z$ such that the likelihood $L(\theta; (\Y, \Z))$ has the closed form \eqref{eq:cdl}, and constructing a Markov chain $\{(\theta^{(m)}, \Z^{(m)})\}_{m=0}^M$ with state space $\chi = \chi_{\theta} \times \chi_{\Z}$ whose stationary distribution is the joint posterior distribution $\pi(\theta, \X|\Y)$ \cite{Gibson.1998, ONeill.1999, Fintzi.2017}. We consider the latent data $\Z = \left\lbrace (z^I_j, z^R_j)\right\rbrace_{j=1}^{n}$ which consist of the times and types of unobserved epidemic events, where the infection and removal times for individual $j$ are
 	$$z^I_j \begin{cases}
-		\in [0, t_{end}) & \text{if individual } j \text{ becomes infectious before } t_{end} \\
-		= \infty & \text{if individual } j \text{ does not become infectious before } t_{end} \\
+		\in [0, t_{end}) & \text{if individual } j \text{ is infected before } t_{end} \\
+		= \infty & \text{if individual } j \text{ is not infected before } t_{end} \\
 	\end{cases}$$
 	and
 	$$z^R_j \begin{cases}
 		\in (z^I_j, t_{end}] & \text{if individual } j \text{ is removed before } t_{end} \\
 		= \infty & \text{if } z^I_j = \infty \text{ or individual } j \text{ is removed after } t_{end}. \\
 	\end{cases}$$
-	
-	The set $\chi_{\Z} \subset (\bar{\R}^+ \times \bar{\R}^+)^n$ consists of the latent data $\Z$ compatible with the observed data $\Y$ and the progression of an epidemic (see Equation \ref{eq:chi}). Since $\Z$ contains all the information present in $\Y$, we can write
+	Since $\Z$ contains all the information present in $\Y$, we can write
 	$$L(\theta; (\Y, \Z)) = L(\theta; \Z).$$
 	
 	%    \jx{Brief transition by saying that drawing from $\chi_Z$ would require conditional simulation, remind reader of the Hobolth stone reference/mention that Lam's method could in theory draw from these conditionals, but it's a hard problem computationally that becomes intractable and instead we will use Metropolis-Hastings with a fast proposal for Z. This was all mentioned in the intro but can be recapped in one/two sentences.}
 	
-	The data-augmented MCMC algorithm that we propose alternates between updates of the parameters $\theta$ given the current state of the latent data $\Z$, and updates of the latent data given the current state of the parameters. A one-step transition from $\x_0 = (\theta_0, \z_0)$ to $\x_1 = (\theta_1, \z_1)$ therefore looks like
-	$$\x_0 = (\theta_0, \z_0) \rightarrow (\theta_1, \z_0) \rightarrow (\theta_1, \z_1) = \x_1.$$
+	We propose a data-augmented (DA) MCMC algorithm that alternates between updates of the parameters $\theta$ given the current configuration of the latent data $\Z$, and updates of the latent data given the current values of the parameters. A one-step transition from $\x_1 = (\theta_1, \z_1)$ to $\x_2 = (\theta_2, \z_2)$ therefore looks like
+	$$\x_1 = (\theta_1, \z_1) \rightarrow (\theta_2, \z_1) \rightarrow (\theta_2, \z_2) = \x_2$$
 	
-	The transition kernel $P$ of the Markov chain $\{\x^{(m)}\}_m$ is thus a composition of two kernels $P_{\theta}$ and $P_{\z}$ which alternatively updates $\theta$ while keeping $\z$ fixed, and then updates $\z$ while keeping $\theta$ fixed. Due to the Gamma conjugacy of the complete-data likelihood mentioned in Section \ref{sec:icd}, drawing new parameter values poses no challenge: we can simply employ a Gibbs sampler to directly draw new values for $\theta = (\beta, \gamma)$ from the two independent full conditional posterior distributions given by Equations \ref{eq:pdb} and \ref{eq:pdg}. In these expressions, $n_I, n_R, \int S(t)I(t) dt, \int I(t) dt$ are sufficient statistics from the latent data $\z$. The latent data is updated in a Metropolis-Hastings step whose kernel is
+	%The transition kernel $P$ of the Markov chain $\{\x^{(m)}\}_m = \{(\theta^{(m)}, \z^{(m)})\}_m$ is thus a composition of two kernels $P_{\theta}$ and $P_{\z}$ which alternatively updates $\theta$ while keeping $\z$ fixed, and then updates $\z$ while keeping $\theta$ fixed. 
+	Due to the Gamma conjugacy of the complete-data likelihood (see Section \ref{sec:icd}), sampling new values for $\theta$ given $\z$ poses no challenge: we can simply employ a Gibbs sampler to directly draw from the two independent full conditional distributions \ref{eq:posterior_theta}. In these expressions, $n_I, n_R, \int S(t)I(t) dt, \int I(t) dt$ are sufficient statistics from the latent data $\z$ which are easy to compute. 
+	The latent data is updated in a Metropolis-Hastings (MH) step. Given some current $\theta$ and $\z$, the MH step proceeds by simulating a candidate $\z^\star$ from a surrogate process $q(\z^\star|\theta)$. Then $\z^\star$ is accepted with probability
 	$$
-	P_{\z}((\theta, \z_0), (\theta, \z_1)) = q(\z_1|\theta) \alpha((\theta, \z_0), (\theta, \z_1)) dz_1
+	\alpha\left( \left( \theta, \z\right) , \left( \theta, \z^\star\right) \right) =	\min\left\lbrace 1, \dfrac{L\left( \theta; \Z^\star\right) q\left( \Z|\theta\right)}{L\left( \theta;\Z\right) q\left( \Z^\star|\theta\right)}\right\rbrace
 	$$
-	where the proposal density $q$ will be defined in the following section and
-	$$
-	\alpha\left( \left( \theta^{(m)}, \Z^{(m-1)}\right) , \left( \theta^{(m)}, \Z^{(m)}\right) \right) = \min\left\lbrace 1, \dfrac{L\left( \theta^{(m)}; \Z^{(m)}\right) q\left( \Z^{(m - 1)}|\theta^{(m)}\right) }{L\left( \theta^{(m)};\Z^{(m - 1)}\right) q\left( \Z^{(m)}|\theta^{(m)}\right) }\right\rbrace
-	$$
-	corresponds to the Metropolis-Hasting acceptance ratio \cite{Tierney.1994}.	
-	Algorithm \ref{alg:DA-MCMC} provides the details of the Data-Augmented MCMC.
+	and otherwise the current $\z$ is retained \cite{Tierney.1994}.
+	%whose kernel is
+	%$$
+	%P_{\z}((\theta, \z_0), (\theta, \z_1)) = q(\z_1|\theta) %\alpha((\theta, \z_0), (\theta, \z_1)) dz_1
+	%$$
+	%where the proposal density $q$ will be defined in the following section and
+	Algorithm \ref{alg:DA-MCMC} provides the details of the DA-MCMC algorithm.
 	
 	\begin{algorithm}
 		\caption{Data-Augmented MCMC}
 		\label{alg:DA-MCMC}
 		\begin{algorithmic}
 			\REQUIRE $\theta^{(0)}$
+			\RETURN $\{(\Z^{(i)}, \theta^{(i)})\}_{i=0}^N$ 
 			\STATE $\Z^{(0)} \sim q(\Z|\theta^{(0)})$ (generate the initial latent space)
 			\FOR {$j = 1, \dots, N$}
 			\STATE $\beta^{(j)}|Z^{(j - 1)} \sim Ga\left( a_{\beta} + n_I^{(j - 1)}, b_{\beta} + \int_{0}^{t_{end}} I^{(j - 1)}(t)S^{(j - 1)}(t)dt\right)$ (Gibbs update)
@@ -263,50 +265,49 @@
 		\end{algorithmic}
 	\end{algorithm}
 	
-	\subsection{Efficient Proposal Process for Latent Data}	\label{sec:pds}
-	Though forward simulation of the stochastic SIR process is straightforward, 
-	simulating trajectories \textit{conditionally} on the observed incidence data $\Y$ is a notoriously difficult task \cite{Hobolth.2009}. Instead, we will generate the latent variables conditionally on $\Y$ from a surrogate process, and accept or reject them in a Metropolis-Hastings step.
-	
-	%\subsection{The Piecewise-decoupled SIR Process}
+	\subsection{Efficient Proposal Process for Latent Data}
+	\label{sec:pds}
 	% Outline: define PD-SIR; generate PD-SIR
-	To this end, we consider a stochastic process whose dynamics closely resemble those of the SIR process and which is designed for efficient simulation of epidemic trajectories compatible with the incidence data $\Y = T_{1:K}$. We refer to this surrogate process as the \textit{piecewise decoupled SIR} process (PD-SIR).
-	Similarly to the SIR process, the PD-SIR process corresponds to a compartmental model in which individuals move from the compartments $S$ to $I$ and from $I$ to $R$.
+	Though forward simulation of the stochastic SIR process is straightforward, 
+	simulating trajectories \textit{conditionally} on the observed incidence data $\Y$ is a notoriously difficult task \cite{Hobolth.2009}. Instead, we will generate the latent data conditionally on $\Y$ from a surrogate process, and accept or reject them in a MH step.
+	
+	To this end, we consider a stochastic process whose dynamics closely resemble those of the SIR  and which is designed for efficient simulation of epidemic trajectories compatible with the incidence data $\Y = T_{1:K}$. We refer to this surrogate process as the \textit{piecewise decoupled SIR} process (PD-SIR).
+	Similarly to the SIR, the PD-SIR process corresponds to a compartmental model in which individuals move from the compartments $S$ to $I$ and from $I$ to $R$.
 	The removal dynamics are identical under both processes: infection periods follow independent exponential distributions with rate $\gamma$, resulting in a constant individual-level removal rate $\gamma$. 
 	
 	The infection dynamics, however, vary slightly.
 	In the SIR process, the population-level infection rate at time $t$ is $\mu_T(t) = \beta S(t)I(t)$ and so, from the perspective of each susceptible individual, the individual-level infection rate is $\mu(t) = \frac{\mu_T(t)}{S(t)} = \beta I(t)$. Note that $\mu$ varies after every event since the value of $I$ changes after an infection or a removal.
-	In contrast, in the PD-SIR process, the infection rate is kept constant over small time intervals. Consider a resetting schedule $r_{0:L}$ ($L\ge1$) with $0 = r_0 < r_1 < \dots < r_L$. The individual-level infection rate of the PD-SIR process is defined as
-	$$\tilde{\mu}(t) = \beta I(r_{k - 1}), \forall t \in [r_{k - 1}, r_k)$$
-	where $I(r_{k-1})$ denotes the number of infectious individuals at the beginning of the time interval. That is, the infection rate is kept constant over short periods of time. The infection rate $\mu$ and the evolution of the variable $I$ are therefore decoupled during each interval, and the infection rate is reset at the beginning %or left endpoint
-	of the intervals. Over a single interval, the PD-SIR process is equivalent to a two-type branching process approximation of the SIR dynamics \cite{Ho.2018}. \jx{I really like how this is written but I wonder if there's some simple figure we can make to illustrate the model and difference between SIR at a glance => line plot of mu over time with colored vertical line for every event. Done.}.
+	In contrast, in the PD-SIR process, the infection rate is kept constant over small periods of time. Consider a resetting schedule $r_{0:L}$ ($L\ge1$) with $0 = r_0 < r_1 < \dots < r_L$. The individual-level infection rate of the PD-SIR process is defined as
+	$$\tilde{\mu}(t) = \beta I(r_{k - 1}), \quad \forall t \in [r_{k - 1}, r_k)$$
+	where $I(r_{k-1})$ denotes the number of infectious individuals at the beginning of the time interval. As shown in \ref{fig:mu}, the infection rate $\tilde{\mu}$ and the evolution of the variable $I$ are therefore decoupled during each interval, and the infection rate is reset at the beginning %or left endpoint
+	of the intervals. Over a single interval, the PD-SIR process is equivalent to a two-type branching process approximation of the SIR dynamics \cite{Ho.2018}. 
 	
 	\begin{figure}
 		\centering
 		\includegraphics[scale = 0.6]{infection_rate_SIR_PDSIR.jpg}
-		\caption{Infection dynamics of the SIR (dashed line) and PD-SIR (solid line) processes in a small population ($(S(0), I(0)) = (10,2)$).
-			$(\beta, \gamma) = (0.2, 1)$ and the resetting schedule of the PD-SIR contains $L=5$ intervals of equal length.
-			The vertical dotted lines indicate the infection (red) and removal (blue) times.}
+		\caption{Infection dynamics of the SIR (dashed line) and PD-SIR (solid line) processes in a small population ($(S(0), I(0)) = (10,2)$) with $\beta=1$. The resetting schedule of the PD-SIR is $r_{0:3}=(0.0.2, 0.4, 0.6)$.
+		The vertical dotted lines indicate the infection (red) and removal (blue) times.}
 		\label{fig:mu}
 	\end{figure}
 	
 	Now, by letting the resetting schedule $r_{0:L}$ coincide with the observation schedule $t_{0:K}$,
 	$$L = K, \text{ and } r_k = t_k, \quad k=1,\dots,K,$$
-	we can straightforwardly simulate realizations from the PD-SIR process conditionally on the observations $I_{1:K}$. By construction, under the PD-SIR model the population of susceptible individuals $S(t)$ follows a linear death process during each time interval with death rate $\mu_k = \beta I(t_{k-1})$. Generating event times from a linear death process conditionally on the number of events happening by a certain time can be done extremely efficiently as shown by the following theorem whose proof is presented in Appendix \ref{app:ldp}.
+	we can straightforwardly simulate realizations from the PD-SIR process conditionally on the observations $I_{1:K}$. By construction, under the PD-SIR model the population of susceptible individuals $S(t)$ follows a linear death process during each interval with death rate $\mu_k = \beta I(t_{k-1})$. Generating event times from a linear death process conditionally on the number of events happening by a certain time can be done extremely efficiently as shown by the following theorem whose proof is presented in Appendix \ref{app:ldp}.
 	
 	\begin{theorem}
 		\label{theo:ldp}
-		Consider a linear death process with death rate $\mu$ and let $d_{1:T} \in (t_l, t_u]$ be the times of the $N$ deaths occurring between times $t_l$ and $t_u$. Then 
+		Consider a linear death process with death rate $\mu$ and let $d_{1:N} \in (t_l, t_u]$ be the times of the $N$ deaths occurring between times $t_l$ and $t_u$. Then 
 		$$d_j \,{\buildrel d \over =}\, X_{(j)}, \quad j = 1, \dots, N$$
 		where $X_{(j)}$ is the $j^{\text{th}}$ order statistics of $N$ i.i.d.\ random variables following a truncated exponential distribution with rate $\mu$, lower bound $t_l$ and upper bound $t_u$.
 	\end{theorem}
 	
-	We can use this result to generate latent data  $\z = \left\lbrace (z^I_i, z^R_i)\right\rbrace_{i=1}^{n}$ compatible with $\Y = I_{1:K}$ from the PD-SIR process as follows. For each time interval $[t_{k-1}, t_k)$, we compute $\mu_k = \beta I(t_{k-1})$ and $U_k = I(0) + \sum_{l=1}^{k-1} I_l$, the total number of infections that have happened before $t_{k-1}$. The index set $\mathcal{I}_k = (U_k + 1, \dots, U_k + I_k)$ therefore denotes the $I_k$ individuals infected during the $k$th interval. Note that $I(t_{k-1})$ only depends on past events and can therefore be computed given the PD-SIR process up to time $t_{k-1}$. Algorithm \ref{alg:PD-SIR} provides a simple recursion to compute this variable. For $j \in \mathcal{I}_k$, by following Theorem \ref{theo:ldp}, we draw the infection times $z^I_j$ as the order statistics of $I_k$ i.i.d.\ truncated exponential random variables with rate $\mu_k$, lower bound $t_{k-1}$ and upper bound $t_k$. For the same indices $j$, we then generate the removal times $z^R_j$ from the removal dynamics of the SIR. To accomplish this, we propose the removal time of individual $j$ from the mixed distribution
+	We can use this result to generate latent data  $\z = \left\lbrace (z^I_i, z^R_i)\right\rbrace_{i=1}^{n}$ compatible with $\Y = I_{1:K}$ from the PD-SIR process as follows. For each time interval $[t_{k-1}, t_k)$, we compute $\mu_k = \beta I(t_{k-1})$ and $U_k = I(0) + \sum_{l=1}^{k-1} I_l$, the cumulative number of infections that happened before $t_{k-1}$. The index set $\mathcal{I}_k = \{U_k + 1, \dots, U_k + I_k\}$ therefore denotes the $I_k$ individuals infected during the $k$th interval. Note that $I(t_{k-1})$ only depends on past events and can therefore be computed given the PD-SIR process up to time $t_{k-1}$. Algorithm \ref{alg:PD-SIR} provides a simple recursion to compute this variable efficiently. For $j \in \mathcal{I}_k$, following Theorem \ref{theo:ldp}, we sample the infection times $z^I_j$ from $\TruncExp(\mu_k; t_{k-1}, t_k)$, a truncated exponential distribution with rate $\mu_k$ bounded between $t_{k-1}$ and $t_k$ from which can efficiently be done with the inverse CDF method. For the same indices $j$, we then generate the removal times $z^R_j$ from the removal dynamics of the SIR. To accomplish this, we sample the removal time of individual $j$ from the mixed distribution
 	$$(1 - p_j) \delta_{\infty} + p_j \TruncExp(\gamma; z^I_j, t_{end})$$
 	placing point mass $(1 - p_j)$ at $\infty$ and continuous mass on $(z^I_j, t_{end}]$,
 	where $\delta_{\infty}$ corresponds to the Dirac distribution with mass $1$ on the element $\infty$,
-	$$p_j = 1 - \exp\{-\gamma (t_{end} - z^I_j)\} = P(z^R_j < t_end | z^I_j)$$
+	$$p_j = 1 - \exp\{-\gamma (t_{end} - z^I_j)\} = P(z^R_j < t_{end} | z^I_j)$$
 	is the cumulative distribution function of an exponential distribution with rate $\gamma$, % and corresponds to the probability that particle $j$ is removed before $t_{end}$ given that it was infected at time $z^I_j$,
-	and $\TruncExp(\gamma; z^I_j, t_{end})$ denotes a truncated exponential distribution with rate $\gamma$ bounded between $z^I_j$ and  $t_{end}$. By construction, this scheme generates latent data from the PD-SIR process that are compatible with the observed data. Algorithm \ref{alg:PD-SIR} provides a summary of the procedure in pseudo-code.
+	. By construction, this scheme generates latent data from the PD-SIR process that are compatible with the observed data. Algorithm \ref{alg:PD-SIR} provides a summary of the procedure in pseudo-code.
 	
 	\begin{algorithm}
 		\caption{Generating a PD-SIR process conditionally on discretely observed infection incidence counts $I_{1:K}$}
@@ -336,13 +337,13 @@
 		\end{algorithmic}
 	\end{algorithm}
 	
-	Based on this construction, we see that the density $q$ of the PD-SIR process is
-	\begin{align*}
-		q(\z|\theta) & = && \prod_{k=1}^K \prod_{j\in\mathcal{I}_k} \TruncExp(\tau^I_j; \mu_{k}, t_{k-1}, t_{k}) \\
-		& && \times \prod_{i=1}^{n} \left( 1 - p_i \right)^{\mathbf{1}(z^R_i = \infty)} \left( p_i \TruncExp(z^I_i; \gamma, z^I_i, t_{end}) \right)^{\mathbf{1}(z^R_i \le t_{end})} \\
-		& = && \prod_{k=1}^K \prod_{j\in\mathcal{I}_k} \TruncExp(\tau^I_j; \mu_{k}, t_{k-1}, t_{k}) \\
-		& && \times \prod_{i=1}^{n} \left( 1 - p_i \right)^{\mathbf{1}(z^R_i = \infty)} \left( p_i \TruncExp(z^I_i; \gamma, z^I_i, t_{end}) \right)^{\mathbf{1}(z^R_i \le t_{end})}
-	\end{align*}
+	The density $q$ of the PD-SIR process can therefore be written as
+	\begin{alignat*}{3}
+		q(\z|\theta) & = && \prod_{k=1}^K \prod_{j\in\mathcal{I}_k} \TruncExp(z^I_j; \mu_{k}, t_{k-1}, t_{k}) \\
+		& && \times \prod_{i=1}^{n} \left( 1 - p_i \right)^{\mathbf{1}(z^R_i = \infty)} \left( p_i \TruncExp(z^R_i; \gamma, z^I_i, t_{end}) \right)^{\mathbf{1}(z^R_i \le t_{end})} \\
+		& = && \prod_{k=1}^K \prod_{j\in\mathcal{I}_k} \TruncExp(z^I_j; \mu_{k}, t_{k-1}, t_{k}) \\
+		& && \times \prod_{i=1}^{n} \left( 1 - p_i \right)^{\mathbf{1}(z^R_i = \infty)} \left( p_i \TruncExp(z^R_i; \gamma, z^I_i, t_{end}) \right)^{\mathbf{1}(z^R_i \le t_{end})}
+	\end{alignat*}
 	where %$\mu_k = \beta I(t_{k-1})$ and
 	$$\TruncExp(x; \mu, l, u) = \dfrac{\mu \exp\{-\mu x\}}{\exp\{-\mu l\} - \exp\{-\mu u\}}, \quad x \in (l, u)$$
 	denotes the density of a truncated exponential distribution with parameters as notated previously.
@@ -351,10 +352,12 @@
 	\label{sec:qua}
 	% Outline: spaghetti plot, compare distribution of a particular infection time under SIR v approximation process (plot density and compute KS distance).
 	
-	Since the proposal for the latent data is independent from the current configuration of the latent data, the efficiency of the DA-MCMC algorithm to explore the latent space directly depends on how similar the surrogate process is to the target process. In particular, the Markov chain will have good mixing properties if the PD-SIR process is a close approximation of the SIR process. The PD-SIR process only differs from the SIR process in its infection dynamics, the removal dynamics being identical in the two processes. Figure \ref{fig:comparison} compares the trajectories of the compartments $S$, $I$ and $R$ of a SIR process of moderate size ($(S(0) = 1000, I(0), R(0)) = (1000, 10, 0)$ with $(\beta, \gamma) = (0.003, 1)$ and $t_{end} = 6$) and those of four PD-SIR processes constrained to be compatible with the observed incidence data $I_{1:K}$ from the SIR process for $K \in (5, 10, 50, 1,000)$. We see that the PD-SIR is qualitatively close to the SIR, even for small values of $K$. Unsurprisingly, the quality of the approximation improves as $K$ increases.
-	% In the limit as $K \rightarrow \infty$, the infection times are known.
-	The fact that the PD-SIR is a faithful approximation of the SIR leads to a relatively high acceptance rate in the Metropolis-Hastings step for the latent data. As a result, our algorithm makes larger jumps in the high-dimensional latent space and therefore explores it more efficiently.
+	Since the proposal for the latent data is independent from the current configuration of the latent data, the efficiency of the DA-MCMC algorithm to explore the latent space directly depends on how similar the surrogate process is to the target process. The Markov chain will have good mixing properties if the PD-SIR process is a close approximation of the SIR process. The PD-SIR process only differs from the SIR process in its infection dynamics, the removal dynamics being identical in the two processes. Figure \ref{fig:comparison} compares the trajectories of the compartments $S$, $I$ and $R$ of a SIR process of moderate size ($(S(0) = 1000, I(0), R(0)) = (1000, 10, 0)$ with $(\beta, \gamma) = (0.003, 1)$ and $t_{end} = 6$) and those of four PD-SIR processes constrained to be compatible with the observed incidence data $I_{1:K}$ from the SIR process for $K \in \{5, 10, 50, 1,000\}$. We see that the PD-SIR is qualitatively close to the SIR, even for small values of $K$. Unsurprisingly, the quality of the approximation improves as $K$ increases.
+	% In the limit as $K \rightarrow \infty$, the infection times are effectively known.
+	The fact that the PD-SIR is a faithful approximation of the SIR leads to a relatively high acceptance rate in the Metropolis-Hastings step for the latent data. As a result, our algorithm frequently makes larger jumps in the high-dimensional latent space and therefore explores it more efficiently.
 	%Moreover, even though the latent spaces are generated from an approximation of the SIR process, the Metropolis-Hastings step ensures that the Markov chain converges to the posterior distribution of the parameters under the SIR model; in other words, the inference is exact. 
+	
+	\ram{Piece-wise linear trajectory of S compartment comes from the fact that it follows a linear death process with piece-wise constant rate.}
 	
 	\begin{figure}
 		\centering
@@ -401,6 +404,7 @@
 	Finally, we show in the following section that the algorithm generates a Markov chain that is \textit{uniformly ergodic}, the strongest form of ergodicity for a Markov chain \cite{Tierney.1994}. %The proof of this result is provided in Appendix \ref{app:uni}.
 	% our DA-MCMC only requires I(0), not S(0).
 	
+	\jx{We may insert a brief note explicitly contrasting with previous single-site RJMCMC work, giving a bit of intuition why we are able to avoid that change of space, and this could be a natural place to put it. Then, they also have a little more context for the experiment you've since added} 
 	
 	\subsection{Uniform Ergodicity}
 	
@@ -603,15 +607,12 @@
 	\label{sec:sim}
 	%Outline: (1) proof of concept, (1bis) coverage, (2) rho (3) single-site versus joint proposal
 	
-	% explain why not compare chain binomial, particle filtering (forward simulation), LNA requires noisy data.
-	
-	
-	We examine the convergence properties of the proposed DA-MCMC algorithm with simulation studies. First, we assess the performance of the DA-MCMC algorithm in a medium-sized population of over $1000$ individuals. We simulate a pandemic with parameters $(\beta, \gamma) = (0.0025, 1)$, which gives $R_0 = 2.5$, starting with $(S(0), I(0)) = (1000, 10)$ until time $t_{end} = 6$ when the pandemic has completed most of its course but is not over yet (see Figure \ref{fig:E1_trajectories}, where $I(t_{end}) = 55$). The numbers of infections in $K = 10$ time intervals of equal length are observed, corresponding to $I_{1:K} = (9, 14, 21, 42, 56, 121, 190, 162, 107, 73)$.	
-	We put the conjugate prior distributions on the parameters $\beta \sim Ga(0.001, 1)$ and $\gamma \sim Ga(1,1)$ independently, which are weakly informative.
-	The Markov chain is initialized in a low density region at $(\beta^{(0)}, \gamma^{(0)}) = (\beta/10, \gamma/10) = (0.00025, 0.1)$ and is run for $1$ million iterations. We keep every tenth draw for storage reason and set $\rho = 0.2$ so that the trajectories of $\lfloor\rho (S(0)+I(0))\rfloor = 202$ individuals are updated in each Metropolis-Hastings step. The algorithm takes less than $30$ minutes to complete on a personal laptop. 
+	We validate the convergence properties of the proposed DA-MCMC algorithm empirically via a suite of simulation studies. First, we assess the performance of the DA-MCMC algorithm in a medium-sized population of over $1000$ individuals. We simulate an epidemic from true parameters $(\beta, \gamma) = (0.0025, 1)$, which gives $R_0 = 2.5$, starting with $(S(0), I(0)) = (1000, 10)$ until time $t_{end} = 6$ when the outbreak has completed most of its course but is not over yet (see Figure \ref{fig:E1_trajectories}, where $I(t_{end}) = 55$). The numbers of infections in $K = 10$ time intervals of equal length are observed, corresponding to $I_{1:K} = (9, 14, 21, 42, 56, 121, 190, 162, 107, 73)$.	
+	We use the conjugate prior distributions \ref{eq:pri} $\beta \sim Ga(0.001, 1)$ and $\gamma \sim Ga(1,1)$, which are only weakly informative.
+	The Markov chain is initialized in a low density region at $(\beta^{(0)}, \gamma^{(0)}) = (\beta/10, \gamma/10) = (0.00025, 0.1)$, and we keep every tenth draw for storage reasons, and set $\rho = 0.2$ so that the trajectories of $\lfloor\rho (S(0)+I(0))\rfloor = 202$ individuals are updated in each Metropolis-Hastings step. The algorithm takes less than $30$ minutes to generate $1$ million samples on a personal laptop. 
 	
 	Figure \ref{fig:E1_short_no_burn_gamma_tp} shows the traceplot of the parameter $\gamma$ for the first $10000$ iterations. We observe that the Markov chain quickly migrates from the low density region where it is initialized to the mode of the target distribution. Figures  \ref{fig:E1_burn_gamma_tp} and \ref{fig:E1_burn_gamma_acf}, which show the traceplot of $\gamma$ after a burn-in period of $10000$ iterations and its auto-correlation function, indicate that once the chain reaches the high density region it mixes well. The acceptance rate of the Metropolis-Hastings step is $0.21$.
-	The posterior means of $\beta$, $\gamma$ and $R_0$ are respectively $0.00217$, $0.815$ and $2.75$, respectively based on $398$, $370$ and $438$ effective sample sizes. The $90\%$ credible intervals are $(0.00166, 0.00278)$, $(0.492, 1.19)$ and $(2.26, 3.45)$ and cover the true values of the parameters. To verify the coverage of the DA-MCMC algorithm, the experiment was repeated $2000$ times independently. Tables \ref{tab:coverage} provides the nominal coverage of the $90\%$ credible intervals for the parameters $\beta$, $\gamma$ and $R_0$ along with the average and variance of the posterior means. The algorithm has the appropriate coverage, suggesting that running the chain for $1$ million iterations is sufficient to approximate the posterior distribution of the parameters.
+	The posterior means of $\beta$, $\gamma$ and $R_0$ are respectively $0.00217$, $0.815$ and $2.75$, respectively based on $398$, $370$ and $438$ effective sample sizes. The $90\%$ credible intervals are $(0.00166, 0.00278)$, $(0.492, 1.19)$ and $(2.26, 3.45)$ and cover the true values of the parameters. To validate the uncertainty quantification of the posteriors under our DA-MCMC algorithm, we examine frequentist coverage properties of posterior credible intervals under $2000$ independently repeats of the experiment. Tables \ref{tab:coverage} provides the empirical coverage of the $90\%$ credible intervals for the parameters $\beta$, $\gamma$ and $R_0$ along with the average and variance of the posterior means. The algorithm has the appropriate coverage, suggesting that running the chain for $1$ million iterations is sufficient to approximate the posterior distribution of the parameters.
 	
 	\begin{figure}
 		\centering
@@ -657,15 +658,15 @@
         $R_0$ & 0.910 & 2.54 & 0.194 \\
         \hline
     \end{tabular}
-    \caption{Nominal coverage of the DA-MCMC algorithm and distribution of the posterior means from $2000$ independent runs in a medium-sized population. The true values of the parameters are $(\beta. \gamma. R_0) = (0.0025, 1, 2.5)$.}
+    \caption{Empirical coverage of  $90\%$ posterior credible intervals and distribution of the posterior means from $2000$ independent runs in a medium-sized population. The true values of the parameters are $(\beta. \gamma. R_0) = (0.0025, 1, 2.5)$.}
     \label{tab:coverage}
     \end{table}
 	
-	Second, we evaluate the impact of the tuning parameter $\rho$ on the mixing properties of the algorithm across different population sizes.
-	We simulate three SIR processes with respectively $S(0) \in \{250, 500, 1000\}$. We set $I(0)=10$, $\gamma=1$, $t_{end} = 6$ and $K = 10$ for each simulation and use $R_0 \in \{3, 2.5, 2\}$ respectively for the different population sizes. These values for $R_0$ were chosen to give pandemics with comparable dynamics. We consider the values $\rho \in \{0.02, 0.05, 0.1, 0.25, 0.5, 1\}$. For each population size and each value of $\rho$, the DA-MCMC algorithm is run for $1$ million iterations. %Note that the algorithm is not run if the number of trajectories updated $\rho(S_0+I_0)$ is smaller than $1$.
+	Second, we explore the impact of the tuning parameter $\rho$ on the mixing properties of the algorithm across different population sizes.
+	We simulate three SIR processes with $S(0) \in \{250, 500, 1000\}$. We set $I(0)=10$, $\gamma=1$, $t_{end} = 6$ and $K = 10$ for each simulation and use $R_0 \in \{3, 2.5, 2\}$ respectively for the different population sizes. These values for $R_0$ were chosen to give pandemics with comparable dynamics. We consider the values $\rho \in \{0.02, 0.05, 0.1, 0.25, 0.5, 1\}$. For each population size and each value of $\rho$, the DA-MCMC algorithm is run for $1$ million iterations. %Note that the algorithm is not run if the number of trajectories updated $\rho(S_0+I_0)$ is smaller than $1$.
 	
-	Figure \ref{fig:E3_runtime} and \ref{fig:E3_accept} presents the run time of the algorithm and the acceptance rate in the Metropolis-Hastings step. We observe that the run time increases with the population size and with $\rho$ and that, as expected, the acceptance rate decreases as the number of trajectories updated per iteration $\rho(S(0)+I(0))$ increases.
-	Finally, Figure \ref{fig:E3_facet_ESSsecR0} shows the effect of $\rho$ on the auto correlation function for the parameter $\beta$ for the medium-size population process ($S(0) = 1,000$) for three values of $\rho$. We observe that updating half of the augmented data per iteration yields the lowest auto-correlation function across the values of $\rho$ considered. This suggests that, in this setting, updating the entire latent space in the Metropolis-Hastings step results in too many rejections while updating a tenth or less prevents the chain from efficiently exploring the latent space.
+	Figure \ref{fig:E3_runtime} and \ref{fig:E3_accept} present the run time of the algorithm and the acceptance rate in the Metropolis-Hastings step. We observe that the run time increases with the population size and with $\rho$ and that, as expected, the acceptance rate decreases as the number of trajectories updated per iteration $\rho(S(0)+I(0))$ increases.
+	Finally, Figure \ref{fig:E3_facet_ESSsecR0} shows the effect of $\rho$ on the auto correlation function for the parameter $\beta$ for the medium-size population process ($S(0) = 1,000$) for three values of $\rho$. We observe that updating half of the augmented data per iteration yields the lowest auto-correlation function across the values of $\rho$ considered. This suggests that, in this setting, updating the entire latent space in the Metropolis-Hastings step results in too many rejections, while updating a tenth or less prevents the chain from efficiently exploring the latent space.
 	
 	
 	\begin{figure}
@@ -696,7 +697,10 @@
 		\label{fig:E3}
 	\end{figure}
 		
-	Finally, we compare the performance of the proposed DA-MCMC algorithm in which event times are jointly proposed to that of a single-site-update DA-MCMC (SSU DA-MCMC) that is similar in spirit to \cite{Gibson.1998, ONeill.1999, Fintzi.2017}. The SSU DA-MCMC that we consider here is a special case of the proposed DA-MCMC in which $\rho = (S(0)+I(0))^{-1}$, so that the infection and removal times of a single individual are updated per iteration. The two algorithms are run on the same data for $1$ million iterations. Figure \ref{fig:E6} presents the traceplots for $\gamma$ as well as the auto-correlation function. We observe that the Markov chain mixes much better when event times are jointly proposed in the Metropolis-Hastings step. This is confirmed by Table \ref{tab:E6} which shows that the effective sample size per second obtained with the proposed DA-MCMC is between 7 and 20 times larger than that of the SSU DA-MCMC.
+	Finally, we compare the performance of the proposed DA-MCMC algorithm in which event times are jointly proposed to that of a single-site-update DA-MCMC (SSU DA-MCMC) that is similar in spirit to \cite{Gibson.1998, ONeill.1999, Fintzi.2017}. The SSU DA-MCMC that we consider here is a special case of the proposed DA-MCMC in which $\rho = (S(0)+I(0))^{-1}$, so that the infection and removal times of a single individual are updated per iteration. The two algorithms are run on the same data for $1$ million iterations. Figure \ref{fig:E6} presents the traceplots for $\gamma$ as well as the auto-correlation function. We observe that the Markov chain mixes much better when event times are jointly proposed in the Metropolis-Hastings step. This is supported quantitatively in Table \ref{tab:E6} which shows that the effective sample size per second obtained with the proposed DA-MCMC is between 7 and 20 times larger than that of the SSU DA-MCMC.
+	
+	
+ \ram{explain why not compare chain binomial, particle filtering (forward simulation), LNA requires noisy data.}
 	
 	\begin{figure}
 		\centering
@@ -753,6 +757,7 @@
 	We now turn to a case study concerning the Ebola outbreak in Western Africa.
 	Between the end of $2013$ and $2015$, Guinea, along with several neighboring countries, experienced the largest outbreak of the Ebola virus disease in history. The virus, which has a fatality rate of $70\%$, was responsible for the death of almost $2,000$ people in Guinea alone.
 	The outbreak is believed to have originated in the Gu\'eck\'edou prefecture of Guinea at the end of November $2013$ \cite{Baize.2014}. Weekly infection incidence counts are available for each prefecture for the $73$ weeks between the end of December $2013$ and May $2015$.
+	The analysis serves to show that fast and exact Bayesian inference can be made regarding the Ebola pandemic with the proposed DA-MCMC algorithm instead of providing new insights into this outbreak or the Ebola virus in general.
 	
 	We fit the stochastic SIR model to these incidence counts for the Gu\'eck\'edou prefecture using the MCMC algorithm proposed in this article.
 	For simplicity, we assume that the population of the prefecture forms a closed population, that the model's parameters remained constant throughout the outbreak and that the reported infections counts are exact.
@@ -763,10 +768,10 @@
 	Since the first documented infection occurred late November \cite{Baize.2014}, one month before the first reported incidence count, we set $I(0) = 5$.
 	
 	The Markov chain is run for $1$ million iterations and the event times of $\rho=10\%$ of the individuals are updated each iteration. The initial values of the parameters are set to $(\beta^{(0)}, \gamma^{(0)}) = (10^{-7}, 0.05)$ and the conjugate distributions in Equation \ref{eq:pri} are used as priors with $a_{\beta} = b_{\beta} = a_{\gamma} = b_{\gamma} = 1$ to make them weakly informative. Even for such a large population, the total run time of the algorithm was less than $100$ minutes on a personal laptop.
-	The Metropolis-Hastings step for the latent data proposals achieves a healthy $22.1\%$ acceptance rate, and the first $50,000$ iterations of the Markov chain are discarded as a burn-in.
+	The Metropolis-Hastings step for the latent data proposals achieves a healthy $20.1\%$ acceptance rate, and the first $50,000$ iterations of the Markov chain are discarded as a burn-in.
 	Figure \ref{fig:ebola} shows the marginal posterior distributions $\gamma$, whose means is $0.109$. This indicates that people remained infectious for around $9$ days on average, which is consistent with existing literature. 
 	%As noted by numerous authors, conditionally on partially observed data, the parameters $\beta$ and $\gamma$ appear positively correlated.
-	The posterior distribution of $R_0$ is unimodal, relatively symmetric, and centered around $1$. A basic reproduction number close to $1$ is consistent with an outbreak that lasted several months without infecting the majority of the population.
+	%The posterior distribution of $R_0$ is unimodal, relatively symmetric, and centered around $1$. A basic reproduction number close to $1$ is consistent with an outbreak that lasted several months without infecting the majority of the population.
 	
 	\begin{figure}
 		\centering
@@ -783,7 +788,7 @@
 			\caption{Posterior density of $R_0$.}
 			\label{fig:density_R0}
 		\end{subfigure}
-		\caption{Posterior densities of parameters of interest (excluding burn-in of $10,000$ iterations).}
+		\caption{Marginal posterior distribution of $\gamma$ and its auto-correlation function for the Gu\'eck\'edou prefecture.}
 		\label{fig:ebola}
 	\end{figure}
 	
@@ -798,8 +803,9 @@
 	
 	The algorithm possesses a tuning parameter $\rho$ that determines the portion of the augmented data being updated each iteration. Larger values for $\rho$ enable the chain to make larger steps in the latent space but can result in a low acceptance rate, while smaller values of $\rho$ result in a higher acceptance rate but constrain the chain to make small jumps. Depending on the size of the population, different values of the tuning parameter are optimal. To find a value that optimizes the mixing properties of the chain, one can use several short runs of the algorithm with different values for $\rho$ and select the value that yields the lowest auto-correlation function (ACF). Since the run time of the algorithm increases with $\rho$, one could also look at the effective sample size per unit of time. For instance, for populations of a few hundred individuals, we observed that updating the entire augmented data ($\rho=1$) yields the lowest ACF. In this case, the current and proposed augmented data are independent conditionally on the current value of the parameters.
 	
-	The DA-MCMC algorithm proposed in this article is specific to the stochastic SIR model, which is arguably a simplistic representation of the spread of disease. The model relies on assumptions such as perfect reporting, constant infection rates, homogeneously mixing population and exponentially-distributed infectious periods. In future work, we will present applications of our DA-MCMC algorithm to processes where these assumptions are relaxed. In particular, we are considering extensions to epidemic models with under-reporting, a varying infection rate, stratified populations and non-Markovian dynamics, as well as the general stochastic SIR model of \cite{Severo.1969}.
+	The DA-MCMC algorithm proposed in this article is specific to the stochastic SIR model, which is arguably a simplistic representation of the spread of disease. The model relies on assumptions such as perfect reporting, constant infection rates, homogeneously mixing population and exponentially-distributed infectious periods. In future work, we will present applications of our DA-MCMC algorithm to processes where these assumptions are relaxed. In particular, we are considering extensions to epidemic models with under-reporting \cite{Fintzi.2017}, non-Markovian dynamics \cite{Streftaris.2002}, and a time-varying infection rate \cite{Kypraios.2018}.
 	
+	\ram{modelling the infection rate over time seems necessary for EBola data.}
 	
 	\appendix
 	
