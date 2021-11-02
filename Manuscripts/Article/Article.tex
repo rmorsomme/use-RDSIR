@@ -417,7 +417,7 @@
 	where $\Vert \mu \Vert_{TV}$ denotes the total variation norm of the measure $\mu$.
 	Uniform ergodicity ensures the existence of a Central Limit Theorem for $\bar{g}_m$ whenever $E_\pi |g|^2 < \infty$ \cite{Jones.2004}, that is,
 	$$\sqrt{m}(\bar{g}_m - E_\pi g) \Rightarrow N(0, \sigma^2_g)$$
-	for any initial distribution for some positive, finite $\sigma^2_g$. Furthermore, uniform ergodicity implies that the batch means and spectral variance estimators of $\sigma^2_g$ are consistent (ref).
+	for any initial distribution, for some positive, finite $\sigma^2_g$. Furthermore, uniform ergodicity implies that the batch means and spectral variance estimators of $\sigma^2_g$ are consistent (ref).
 	
 	
 	%First, the Markov chain  $\{(\theta^{(m)}, \z^{(m)})\}_m$ is Harris recurrent and converges to the target posterior distribution. Indeed, by construction, the joint posterior density $\pi(\theta, \z|\Y)$ is invariant for the Gibbs kernel $P_\theta$ and the Metropolis-Hastings kernel $P_\z$ and the density of the composite kernel $P = P_\theta P_\theta$ is strictly positive, implying that the chain is aperiodic and $\pi$-irreducible. Together with the existence of an invariant distribution, $\pi$-irreducibility implies that the chain is positive Harris recurrent.
@@ -427,13 +427,13 @@
 	for some constants $m \ge 1$ and $\beta > 0$.
 	By Proposition 2 in \cite{Tierney.1994}, this implies that the Markov is uniformly ergodic. 
 	
-	To derive this result, we will make use of three lemmas. The appendix contains a detailed a proof of the latter two.
-	\rm{Figures for lemma 3.1 and 3.2?}
+	To derive this result, we will make use of two lemmas. The appendix contains a detailed a proof of the latter one.
+	\ram{Figures for lemma 3.1 and 3.2?}
 	
 	% Gamma 1
 	\begin{lemma}
 		\label{pro:ga1}
-		Let $Ga(x;a,b)$ denote the density of the gamma distribution with shape $a$ and rate $b$ evaluated at $x$. Then
+		Let $Ga(x;a,b) = \dfrac{a^b}{\Gamma(a)}x^{a-1}\exp\{-ab\}$ denote the density of the gamma distribution with shape $a$ and rate $b$ evaluated at $x$. Then
 		\begin{equation}
 			\label{eq:ga1}
 			\inf_{0\le \beta\le B} Ga(x;a,b+\beta) = 
