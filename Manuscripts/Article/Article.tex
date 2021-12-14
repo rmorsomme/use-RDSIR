@@ -469,7 +469,7 @@
 	\label{sec:sim}
 	%Outline: (1) proof of concept, (1bis) coverage, (2) rho (3) single-site versus joint proposal
 	
-	We validate the convergence properties of the proposed DA-MCMC empirically via a suite of simulation studies. First, we assess the performance of the algorithm in a moderately sized population of $1000$ individuals. We simulate an epidemic with true parameters $(\beta, \gamma) = (0.0025, 1)$ -- giving $R_0 = 2.5$ -- starting with $(S(0), I(0)) = (1000, 10)$ until time $t_{end} = 6$, when the outbreak has completed most of its course but is not over yet (see Figure \ref{fig:E1_trajectories}, where $I(t_{end}) = 55$). The numbers of infections in $K = 10$ equal-length time intervals are observed, corresponding to $I_{1:K} = (9, 14, 21, 42, 56, 121, 190, 162, 107, 73)$.	
+	We validate the convergence properties of the proposed DA-MCMC empirically via a suite of simulation studies. First, we assess the performance of the algorithm in a moderately sized population of $1000$ individuals. We simulate an epidemic with true parameters $(\beta, \gamma) = (0.0025, 1)$ -- giving $R_0 = 2.5$ -- starting with $(S(0), I(0)) = (1000, 10)$ until time $t_{end} = 6$, when the outbreak has completed most of its course but is not over yet (see Figure \ref{fig:E1_trajectories}, where $I(t_{end}) = 122$). The numbers of infections in $K = 10$ equal-length time intervals are observed, corresponding to $I_{1:K} = (9, 14, 21, 42, 56, 121, 190, 162, 107, 73)$.	
 	We employ the parameterization $\tilde{\theta} = (\beta, R_0)$ and use the semi-conjugate prior distributions \eqref{eq:pri2} with weakly informative hyperparameters $\beta \sim Ga(0.001, 1)$ and $R_0 \sim IG(1,1)$.
 	To evaluate the convergence speed of the Markov chain, we initialize it in a low density region at $\left(\beta^{(0)}, \gamma^{(0)}\right) = \left(\beta/10, \gamma/10\right)$. We keep every tenth draw for storage reasons and set $\rho = 0.2$, updating the trajectories of $\lceil\rho n\rceil = 202$ individuals in each MH step.
 	
@@ -485,14 +485,14 @@
 		\begin{subfigure}[b]{0.32\textwidth}
 			\centering
 			\includegraphics[width=\textwidth]{E1_short_no_burn_gamma_tp}
-			\caption{Transient phase}
+			\caption{Traceplot during the transient phase}
 			\label{fig:E1_short_no_burn_gamma_tp}
 		\end{subfigure}
 		\hfill
 		\begin{subfigure}[b]{0.32\textwidth}
 			\centering
 			\includegraphics[width=\textwidth]{E1_burn_gamma_tp}
-			\caption{Recurrent phase}
+			\caption{Traceplot after the transient phase}
 			\label{fig:E1_burn_gamma_tp}
 		\end{subfigure}
 		%\hfill
@@ -524,7 +524,7 @@
         $R_0$ & 0.910 & 2.54 & 0.194 \\
         \hline
     \end{tabular}
-    \caption{Empirical coverage of $90\%$ posterior credible intervals and distribution of the posterior means from $2000$ independent runs in a medium-sized population ($n=1000$). The true values of the parameters are $(\beta, \gamma, R_0) = (0.0025, 1, 2.5)$. The standard errors for the observed coverage rate are calculated as $\sqrt{\hat{p}(1-\hat{p})/2000}$, which results in a largest standard error of $6.8$e-3.}
+    \caption{Empirical coverage of the $90\%$ posterior credible intervals and distribution of the posterior means from $2000$ independent runs in a medium-sized population ($n=1000$). The true values of the parameters are $(\beta, \gamma, R_0) = (0.0025, 1, 2.5)$. The standard errors for the observed coverage rate are calculated as $\sqrt{\hat{p}(1-\hat{p})/2000}$, which results in a largest standard error of $6.8$e-3.}
     \label{tab:coverage}
     \end{table}
 	
