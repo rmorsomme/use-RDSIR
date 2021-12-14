@@ -39,15 +39,19 @@
 	
 	\title{%Efficient Likelihood-Based Inference for Fitting Stochastic Epidemic Models to Incidence Data via Data Augmentation
 		Uniformly Ergodic Data-Augmented MCMC for Fitting the General Stochastic Epidemic Model to Incidence Data}
-	\author{Rapha\"{e}l Morsomme$^{1}$\footnote{raphael.morsomme@duke.edu} \ and Jason Xu$^{1}$ \\
-		\small $^{1}$Department of Statistical Science, Duke University \\
+		
+	\author{
+	%Rapha\"{e}l Morsomme$^{1}$\footnote{raphael.morsomme@duke.edu} \ and Jason Xu$^{1}$ \\
+	%	\small $^{1}$Department of Statistical Science, Duke University \\
 	}
-	\date{\today}	
+	\date{
+	\today
+	}	
 	\maketitle
 	
 	\begin{abstract}
 		Stochastic epidemic models provide an interpretable probabilistic description of the spread of a disease through a population. Yet, fitting these models when the epidemic process is only partially observed is a notoriously difficult task due to the intractability of the likelihood for many classical models. To remedy this issue, this article introduces a novel data-augmented MCMC algorithm for fast and exact inference for the stochastic SIR model given discretely observed incidence counts of infection. In a Metropolis-Hastings step, the algorithm jointly proposes the augmented data from a surrogate stochastic process whose dynamics closely resemble those of the SIR process, and from which we can efficiently generate an epidemic that is compatible with the observed data. Not only is the algorithm fast, but since the augmented data are generated from a faithful approximation of the target model, the algorithm can update large portions thereof per iteration without lowering the acceptance rate prohibitively. We find that the method explores the high-dimensional latent space efficiently and show that the Markov chain underlying the algorithm is uniformly ergodic.
-		The proposed algorithm enables exact Bayesian inference that scales to outbreaks in populations of hundreds of thousands, even on a single laptop. We validate its performance via thorough simulation experiments and a case study on the $2014$ Ebola outbreak in Western Africa.
+		The proposed algorithm enables exact Bayesian inference that scales to outbreaks in populations of hundreds of thousands, even on a single laptop. We validate its performance via thorough simulation experiments and a case study on the 2013-2015 Ebola outbreak in Western Africa.
 	\end{abstract}
 	\keywords{Stochastic SIR model; incidence data; exact Bayesian inference; data-augmented MCMC; likelihood-based methods; uniform ergodicity}
 	
@@ -62,7 +66,7 @@
 	
 	In this article, we employ data augmentation to explore configurations of the missing data through latent variables. We introduce a uniformly ergodic data-augmented MCMC (DA-MCMC) algorithm that targets the exact joint posterior of model parameters and these latent variables under the stochastic SIR model, a commonly used SEM, from discretely observed incidence counts of infections. Rather than marginalizing directly, our approach accounts for the latent space via sampling. The algorithm updates the event times of the augmented data by jointly proposing infection and removal times from a surrogate stochastic process whose dynamics closely resemble those of the SIR process, and from which we can efficiently generate an epidemic that is compatible with the observed data. Its success lies in the design of this surrogate process serving as an efficient proposal scheme within a Metropolis-Hastings algorithm. Since the latent spaces are generated from a faithful approximation of the target epidemic model, the algorithm can update a large portion of the event times per iteration while maintaining a high acceptance rate, thereby exploring the high-dimensional latent space efficiently. Our approach is fully Bayesian and therefore allows representation of parameter uncertainty through posterior distributions.
 	
-	The remainder of the article is structured as follows. Section \eqref{sec:set} provides background information on the inference task. It introduces the stochastic SIR model and explains why conducting inference from partially observed data is a difficult task. Previous works addressing this problem are also presented. Section \eqref{sec:pds} introduces the DA-MCMC algorithm and describes the surrogate process from which the latent data are generated in the Metropolis-Hastings step. The similarity between the surrogate and the target processes is assessed in Section \eqref{sec:qua} and the DA-MCMC is shown to be uniformly ergodic in Section \eqref{sec:uni}. In Section \eqref{sec:sim}, we examine the performance of our algorithm on simulated data and then turn to an analysis of the $2014$ Ebola outbreak in Gu\'eck\'edou, Guinea in Section \eqref{sec:ebo}. Finally, Section \eqref{sec:dis} discusses the findings and concludes the article.
+	The remainder of the article is structured as follows. Section \eqref{sec:set} provides background information on the inference task. It introduces the stochastic SIR model and explains why conducting inference from partially observed data is a difficult task. Previous works addressing this problem are also presented. Section \eqref{sec:pds} introduces the DA-MCMC algorithm and describes the surrogate process from which the latent data are generated in the Metropolis-Hastings step. The similarity between the surrogate and the target processes is assessed in Section \eqref{sec:qua} and the DA-MCMC is shown to be uniformly ergodic in Section \eqref{sec:uni}. In Section \eqref{sec:sim}, we examine the performance of our algorithm on simulated data and then turn to an analysis of the 2013-2015 Ebola outbreak in Gu\'eck\'edou, Guinea, in Section \eqref{sec:ebo}. Finally, Section \eqref{sec:dis} discusses the findings and concludes the article.
 	
 	\section{Background and Prior Work}
 	\label{sec:set}
@@ -127,10 +131,8 @@
 	\subsection{Inference with Complete Data}
 	\label{sec:icd}
 	%Outline: complete-data likelihood; MLE; gamma conjugacy
-	\jx{Need some citations here for form of conjugate/MLE forms, etc}
 	
-	When the Markov process \eqref{eq:X} is completely observed until time $t_{end}$, we obtain the following likelihood \cite{Streftaris.2002} 
-	%\ram{ref for likelihood - 2000, auranen et al - Transmission of Pneumococcal Carriage in Families: A Latent Markov Process Model for Binary Longitudinal Data --- general SIR likelihood, Becker and Britton 1999 Statistical Studies of Infectious Disease Incidence}
+	When the Markov process \eqref{eq:X} is completely observed until time $t_{end}$, we obtain the following likelihood \cite{Streftaris.2002}
 	\begin{align}
 		L(\theta; \X)
 		& = \prod_{j \in \mathcal{I}} \beta I(\tau^I_j) \prod_{k \in \mathcal{R}} \gamma \exp\left\lbrace - \int_{0}^{t_{end}}\beta S(t)I(t) + \gamma I(t) dt \right\rbrace  \nonumber \\
@@ -161,7 +163,7 @@
 		\beta | \X & \sim G\left( a_{\beta} + n_I , b_{\beta} + \int_{0}^{t_{end}} I(t)S(t) dt\right) \\
 		\gamma | \X & \sim G\left( a_{\gamma} + n_R, b_{\gamma} + \int_{0}^{t_{end}} I(t) dt\right)
 	\end{align}
-	from which one can easily generate independent values to explore the posterior distribution $\pi(\theta|\X)$ via Monte Carlo.
+	from which one can easily generate independent values to explore the distribution $\pi(\theta|\X)$ via Monte Carlo.
 	
 	The likelihood \eqref{eq:cdl} can also be parameterized in terms of $\tilde{\theta} = (\beta, R_0)$ where $R_0 := S(0) \beta / \gamma$ is called the basic reproduction number and corresponds to the expected number of secondary infections caused by an infectious individual in a susceptible population. Using $\tilde{\theta}$ with the independent prior distributions
 	\begin{equation}
@@ -187,15 +189,11 @@
 	\label{sec:iid}
 	%Outline: observed data; intractable posterior; DAMCMC; parameters update; latent space update
 	
-	In practice, inference is typically complicated by the fact that the epidemic process \eqref{eq:X} is only partially observed. When we do not observe all event times, we do not have access to the sufficient statistics needed to evaluate the likelihood \eqref{eq:cdl}. Various types of partially observed data typify real data and have been considered in the literature, such as observing only the removal times \cite{Gibson.1998, ONeill.1999} or the number of infectious individuals in the population at discrete points in time \cite{Fintzi.2017}. For instance, the former arises in animal experiments in which positive cases are immediately isolated from the rest of the population and no longer contribute to disease spread. In such cases, exact times of removals are known, but such information is unavailable in a typical observational study.
+	In practice, inference is complicated by the fact that the epidemic process \eqref{eq:X} is only partially observed. When we do not observe all event times, we do not have access to the sufficient statistics needed to evaluate the likelihood \eqref{eq:cdl}. Various types of partially observed data typify real data and have been considered in the literature, such as observing only the removal times \cite{Gibson.1998, ONeill.1999} or the number of infectious individuals at discrete points in time \cite{Fintzi.2017}. For instance, the former arises in animal experiments in which positive cases are immediately isolated from the rest of the population and no longer contribute to disease spread. In such cases, exact times of removals are known, but this information is unavailable in a typical observational study.
 	
-	In this article, we consider partial data consisting of \textit{incidence} counts of infections during given time intervals, e.g.\ weekly infection counts. Such data arise when an infectious individual is identified some time after onset and may continue to infect others after being tested positive for the disease. %This was for instance the case during the $2013$–$2016$ outbreak of Ebola virus. This pandemic was unprecedented in scale, with more than $10,000$ reported deaths, mainly in three Western African countries (Guinea, Liberia and Sierra Leone). This outbreak was characterized by the large number of infections that occurred after individuals were tested positive for the virus. Numerous infections happened at the hospitals where infected individuals received a treatment as well as at the funerals of people deceased from the virus\footnote{In most regions impacted by the Ebola virus, touching the body of the deceased person during funerals is a tradition. Since the Ebola virus is transmitted via bodily fluids such as sweat, numerous infections occurred at funerals.}. 
-	%It therefore seems appropriate to model a positive test for the virus as an indication that the individual became infectious some time prior to the test rather than as a removal time.
-	Given an observation schedule $t_{0:K}$ ($K \ge 1$) with $0 = t_0 < t_1 < \dots < t_K = t_{end}$, the observed data consist of the $K$-dimensional vector $\Y = I_{1:K}$ where $I_k = \#\{\tau^I_j \in (t_{k-1}, t_k]\}$ is the number of infections during the $k^{\text{th}}$ interval.
-	%For simplicity, we further assume that the initial configuration of the population $\X(0)$ is known.
+	In this article, we consider partial data consisting of \textit{incidence} counts of infections during given time intervals, e.g.\ weekly infection counts. Such data arise when an infectious individual is identified some time after onset and may continue to infect others after being tested positive for the disease. Given an observation schedule $t_{0:K}$ ($K \ge 1$) with $0 = t_0 < t_1 < \dots < t_K = t_{end}$, the observed data consist of the $K$-dimensional vector $\Y = I_{1:K}$ where $I_k = \#\{\tau^I_j \in (t_{k-1}, t_k]\}$ is the number of infections during the $k^{\text{th}}$ interval.
 	
-	
-	This form of observed data is motivated by the $2013$–$2016$ outbreak of the Ebola virus, the largest outbreak since the discovery of the virus in 1976, which resulted in the deaths of at least 11,000 individuals, mainly in three Western African countries (Guinea, Liberia and Sierra Leone). The data available for this outbreak consist of weekly number of positive tests. This outbreak was characterized by the large number of infections that occurred after individuals were tested positive for the virus, giving rise to noisy incidence data. Numerous infections took place at the hospitals where infected individuals received treatment as well as at the funerals of people deceased from the virus\footnote{In most regions impacted by the Ebola virus, touching the body of the deceased person during funerals is a tradition. Since the Ebola virus is transmitted via bodily fluids such as sweat, numerous infections occurred at funerals.} \ram{ref}. We therefore decide to model the weekly number of positive tests as the weekly number of infections in a SIR model.
+	This form of observed data is motivated by the $2013$–$2016$ outbreak of the Ebola virus, the largest outbreak since the discovery of the virus in 1976, which resulted in at least 11,000 deaths, mainly in three Western African countries (Guinea, Liberia and Sierra Leone). The data available for this outbreak consist of weekly number of positive tests. This outbreak was characterized by the large number of infections that occurred after individuals were tested positive for the virus, giving rise to noisy incidence data. Numerous infections took place at the hospitals where infected individuals received treatment as well as at the funerals of people deceased from the virus\footnote{In most regions impacted by the Ebola virus, touching the body of the deceased during funerals is a tradition. Since the Ebola virus is transmitted via bodily fluids such as sweat, numerous infections occurred at funerals.} \cite{Coltart.2017}. We therefore decide to model the weekly number of positive tests as the weekly number of infections in a SIR model.
 	
 	%It therefore seems appropriate to model a positive test for the virus as an indication that the individual became infectious some time prior to the test rather than as a removal time.
 	
@@ -257,7 +255,7 @@
 	$$\x_1 = (\theta_1, \z_1) \rightarrow (\theta_2, \z_1) \rightarrow (\theta_2, \z_2) = \x_2.$$
 	The first update for $\theta$ is straightforward due to the Gamma conjugacy of the complete-data likelihood \eqref{eq:cdl}. We can simply draw from the two full conditional distributions \eqref{eq:posterior_theta}. In these expressions, the sufficient statistics from $\Z$, $n_I, n_R, \int S(t)I(t) dt, \int I(t) dt$ are easy to compute.
 	The second update for $\Z$, on the other hand, is difficult. Though forward simulation of the stochastic SIR process is straightforward \cite{Gillespie.1977}, simulating trajectories \textit{conditionally} on the observed data requires the conditional simulation of a Markov process which is a notoriously difficult task. Since given the $\Y = I_{1:K}$ the end-point of the process are not known, the methods proposed in \cite{Hobolth.2009} are not applicable.
-	Instead, we generate the latent data conditionally on $\Y$ from a surrogate process, and accept or reject them in a Metropolis-Hastings (MH) step. Given some current $\theta$ and $\z$, the MH step proceeds by simulating a candidate $\z^\star$ from a surrogate process $Q(.|\theta)$ with density $q(\z^\star|\theta)$, which we present in Section \eqref{sec:pds}. Then $\z^\star$ is accepted with probability
+	Instead, we generate the latent data conditionally on $\Y$ from a surrogate process, and accept or reject them in a Metropolis-Hastings (MH) step. Given some current $\theta$ and $\z$, the MH step proceeds by simulating a candidate $\z^\star$ from a surrogate process $Q(.|\theta)$ with density $q(.|\theta)$, which we present in Section \eqref{sec:pds}. Then $\z^\star$ is accepted with probability
 	\begin{equation}
 		\label{eq:alpha}
 		\alpha\left( \left( \theta, \z\right) , \left( \theta, \z^\star\right) \right) =	\min\left\lbrace 1, \dfrac{L\left( \theta; \z^\star\right) q\left( \z|\theta\right)}{L\left( \theta;\z\right) q\left( \z^\star|\theta\right)}\right\rbrace,
@@ -270,7 +268,7 @@
 		\begin{algorithmic}
 			\REQUIRE $\theta^{(0)}$
 			\RETURN $\{(\z^{(m)}, \theta^{(m)})\}_{m=0}^N$ 
-			\STATE $\z^{(0)} \sim Q(.|\theta^{(0)})$ (generate the initial latent space from the PD-SIR)
+			\STATE $\z^{(0)} \sim Q(.|\theta^{(0)})$ (generate the initial latent data from the PD-SIR process)
 			\FOR {$j = 1, \dots, N$}
 			\STATE $\beta^{(j)}|\z^{(j - 1)} \sim Ga\left( a_{\beta} + n_I^{(j - 1)}, b_{\beta} + \int_{0}^{t_{end}} I^{(j - 1)}(t)S^{(j - 1)}(t)dt\right)$ (Gibbs update)
 			\STATE $\gamma^{(j)}|\z^{(j-1)} \sim Ga\left( a_{\gamma} + n_R^{(j - 1)}, b_{\gamma} + \int_{0}^{t_{end}} I^{(j - 1)}(t) dt\right)$ (Gibbs update)
@@ -306,7 +304,7 @@
 	
 	\begin{figure}
 		\centering
-		\includegraphics[scale = 0.4]{infection_rate_SIR_PDSIR.jpg}
+		\includegraphics[scale = 0.5]{infection_rate_SIR_PDSIR.jpg}
 		\caption{Infection dynamics of the SIR (dashed line) and PD-SIR (solid line) processes in a small population ($(S(0), I(0)) = (10,2)$) with $\beta=1$. The schedule of the PD-SIR is $t_{0:3}=(0, 0.2, 0.4, 0.6)$.
 		The vertical dotted lines indicate the infection (red) and removal (blue) times.}
 		\label{fig:mu}
@@ -320,7 +318,7 @@
 		$$\tau_j \,{\buildrel d \over =}\, X_{(j)}, \quad j = 1, \dots, N$$
 		where $X_{(j)}$ is the $j^{\text{th}}$ order statistics of $N$ i.i.d.\ random variables following a truncated exponential distribution with rate $\mu$, lower bound $t_l$ and upper bound $t_u$.
 	\end{theorem}
-	The proof of this theorem is presented in Appendix \ref{app:ldp}. Generating random values from a truncated exponential distribution can be done extremely efficiently with the inverse cumulative distribution function method \cite{Devroye.2006}. 
+	Appendix \ref{app:ldp} contains the proof of this theorem. Generating values from a truncated exponential distribution can be done extremely efficiently with the inverse cumulative distribution function method \cite{Devroye.2006}. 
 	
 	We can use Theorem \ref{theo:ldp} to generate latent data  $\z = \left\lbrace (z^I_i, z^R_i)\right\rbrace_{i=1}^{n}$ compatible with $\Y = I_{1:K}$ from the PD-SIR process as follows. For each time interval $[t_{k-1}, t_k)$, we compute $\mu_k = \beta I(t_{k-1})$ and $U_k = I(0) + \sum_{l=1}^{k-1} I_l$, the cumulative number of infections that happened before $t_{k-1}$. The index set $\mathcal{I}_k = \{U_k + 1, \dots, U_k + I_k\}$ therefore denotes the $I_k$ individuals infected during the $k$th interval. Note that $I(t_{k-1})$ only depends on past events and can therefore be computed given the PD-SIR process up to time $t_{k-1}$. Algorithm \ref{alg:PD-SIR} provides a simple recursion to compute this variable efficiently. For $j \in \mathcal{I}_k$, following Theorem \ref{theo:ldp}, we sample the infection times $z^I_j \sim \TruncExp(\mu_k; t_{k-1}, t_k)$, a truncated exponential distribution with rate $\mu_k$ bounded between $t_{k-1}$ and $t_k$. For the same indices $j$, we then generate the removal times $z^R_j$ from the removal dynamics of the SIR. To accomplish this, we sample the removal time of individual $j$ from the mixed distribution
 	$$z^R_j|z^I_j \sim (1 - p_j) \delta_{\infty} + p_j \TruncExp(\gamma; z^I_j, t_{end})$$
@@ -607,7 +605,7 @@
 	\label{sec:ebo}
 	%Outline: background; setup; results; table; figure
 	
-	We now turn to a case study concerning the 2014-2015 Ebola outbreak in Western Africa.
+	We now turn to a case study concerning the 2013-2015 Ebola outbreak in Western Africa.
 	Between the end of $2013$ and $2015$, Guinea, along with several neighboring countries, experienced the largest outbreak of the Ebola virus disease in history. The virus, which has a fatality rate of $70\%$, was responsible for the death of almost $2000$ people in Guinea alone.
 	The outbreak is believed to have originated in the Gu\'eck\'edou prefecture of Guinea at the end of November $2013$ \cite{Baize.2014}. Weekly infection incidence counts are available for each prefecture for the $73$ weeks between the end of December $2013$ and May $2015$.
 	
