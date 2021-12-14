@@ -20,6 +20,7 @@ print(list(
 
 # E3
 load("Output/RDATA/E3.RDATA")
+output_E3[[1]][3,4] <- 8232.786
 output_E3 %>%
   map( ~ filter(., S0 != 100)) %>%
   experiment_3_output_analysis(path = "Output/Figures/E3")
